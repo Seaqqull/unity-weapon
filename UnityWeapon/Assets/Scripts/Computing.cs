@@ -63,6 +63,22 @@ namespace Utility
 
         public void BakeData()
         {
+            bool flag = false;
+            for (int i = 0; i < _data.Length; i++)
+            {
+                if (_data[i] == null)
+                {
+                    flag = true;
+#if UNITY_EDITOR
+                    Debug.LogError($"Empty {i} element of data array");
+#endif
+                }
+            }
+#if UNITY_EDITOR
+            Debug.LogError("Data cannot be baked");
+#endif
+            if (flag) return;
+
             _dataBaked = new TStruct[_data.Length];
 
             for (int i = 0; i < _data.Length; i++)

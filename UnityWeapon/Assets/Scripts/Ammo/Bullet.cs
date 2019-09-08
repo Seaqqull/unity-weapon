@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Attribute;
 
 [CreateAssetMenu(menuName = "Bullet/Create")]
 public class Bullet : ScriptableObject
@@ -8,7 +8,7 @@ public class Bullet : ScriptableObject
     [SerializeField] protected WeaponAction _shotAction;
     [SerializeField] protected WeaponAction _flyAction;
     [SerializeField] protected WeaponAction _collisionAction;
-    [SerializeField] protected AttributeModifier[] _attributes;
+    [SerializeField] protected StaticAttributes _attributes;
     [SerializeField] [TagSelectorAttribute] protected string[] _enemyTags;
     [SerializeField] [TagSelectorAttribute] protected string[] _collisionTags;    
 }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Attribute;
 
 [CreateAssetMenu(menuName = "Computing/Ammo/Data")]
 public class AmmoData : Utility.ComputingData<AmmoData.Ammo>
@@ -11,7 +12,7 @@ public class AmmoData : Utility.ComputingData<AmmoData.Ammo>
         [SerializeField] public int Amount;
         [SerializeField] public int MagazineCapacity;
         [SerializeField] public bool IsUnlimited;
-        [SerializeField] public AttributeModifier[] Attributes;
+        [SerializeField] public StaticAttributes Attributes;
 
         [HideInInspector] public int MagazineCount;
         [HideInInspector] public int MagazineAmount;

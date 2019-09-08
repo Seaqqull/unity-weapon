@@ -3,5 +3,9 @@
 [CreateAssetMenu(menuName = "Computing/Shooting/Handler")]
 public class ShootingHandler : Utility.ComputingHandler
 {
-    // Some weapon methods, which control the possibility of a shot
+    // Specific weapon shooting checking
+    public virtual bool IsExecutable(Weapon weapon)
+    {
+        return true;
+    }
 }

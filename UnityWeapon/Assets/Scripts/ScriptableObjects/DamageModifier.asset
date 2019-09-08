@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2b4d1f77136a0f449cf10d56e1cbfa9, type: 3}
   m_Name: DamageModifier
   m_EditorClassIdentifier: 
-  Name:
-    UseConstant: 0
-    ConstantValue: 
-    Variable: {fileID: 11400000, guid: f0016b1604da2bb4db592b554f842d1b, type: 2}
-  Type: 1
-  Value: 100
+  _attribute:
+    Name:
+      UseConstant: 0
+      ConstantValue: 
+      Variable: {fileID: 11400000, guid: f0016b1604da2bb4db592b554f842d1b, type: 2}
+    Type: 1
+    Value: 100
