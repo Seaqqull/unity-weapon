@@ -1,11 +1,17 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(menuName = "Computing/Shooting/Handler")]
-public class ShootingHandler : Utility.ComputingHandler
+
+namespace Weapons.Shooting
 {
-    // Specific weapon shooting checking
-    public virtual bool IsExecutable(Weapon weapon)
+    /// <summary>
+    /// Used for weapon-specific checks
+    /// </summary>
+    [CreateAssetMenu(menuName = "Weapon/Shooting/Handler")]
+    public class ShootingHandler : Utility.ComputingHandler
     {
-        return true;
+        public virtual bool IsExecutable(Weapons.Weapon weapon)
+        {
+            return true;
+        }
     }
 }

@@ -1,47 +1,56 @@
 ﻿using UnityEngine;
-using static AmmoData;
 
-[CreateAssetMenu(menuName = "Computing/Ammo/Handler")]
-public class AmmoHandler : Utility.ComputingHandler
+
+namespace Weapons.Ammo
 {
-    public void Reload(Ammo data)
+    [CreateAssetMenu(menuName = "Weapon/Ammo/Handler")]
+    public class AmmoHandler : Utility.ComputingHandler
     {
-        data.MagazineCount = data.Capacity / data.MagazineCapacity;
-        data.MagazineAmount = data.Capacity % data.MagazineCapacity;
-
-        if ((data.MagazineAmount != data.MagazineCapacity) &&
-            (data.MagazineCount > 0))
+        public virtual void Reload(AmmoController data)
         {
-            data.MagazineAmount = data.MagazineCapacity;
-            data.MagazineCount--;
+            data.MagazineCount = data.Amount / data.MagazineCapacity;
+            data.MagazineAmount = data.Amount % data.MagazineCapacity;
+
+            if ((data.MagazineAmount != data.MagazineCapacity) &&
+                (data.MagazineCount > 0))
+            {
+                data.MagazineAmount = data.MagazineCapacity;
+                data.MagazineCount--;
+            }
         }
-    }
 
-    public bool IsReloadPossible(Ammo data)
-    {
-        return data.Amount > 0;
-    }
+        public virtual bool IsReloadPossible(AmmoController data)
+        {
+            return data.Amount > 0;
+        }
 
-    public void AddAmmo(Ammo data, int count)
-    {
-        if (count > data.Capacity - data.Amount)
-            data.Amount = data.Capacity;
-        else
+        public virtual int AddAmmo(AmmoController data, int count)
+        {
+            if (count > data.Capacity - data.Amount)
+                count = data.Capacity - data.Amount;
+
             data.Amount += count;
-    }
+            return count;
+        }
 
-    public void SubtractAmmo(Ammo data, int shootCount)
-    {
-        if ((data.IsUnlimited) ||
-            (data.MagazineAmount == 0)) return;
+        public virtual void SubtractAmmo(AmmoController data, int shootCount)
+        {
+            if ((data.MagazineAmount == 0) ||
+                (data.IsAmountUnlimited && data.IsMagazineAmountUnlimited)) return;
 
-        data.MagazineAmount -= shootCount;
-        data.Amount -= shootCount;
-    }
+            if (!data.IsMagazineAmountUnlimited)
+            {
+                data.MagazineAmount -= shootCount;
+                if (!data.IsAmountUnlimited)
+                    data.Amount -= shootCount;
+            }
+        }
 
-    public bool HasRequiredAmount(Ammo data, int ammoAmount)
-    {
-        return (data.IsUnlimited) ? true :
-               (ammoAmount > data.MagazineAmount) ? false : true;
+        public virtual bool HasRequiredAmount(AmmoController data, int ammoAmount)
+        {
+            return (data.IsMagazineAmountUnlimited) ? true :
+                   (ammoAmount > data.MagazineAmount) ? false : true;
+        }
+
     }
 }
