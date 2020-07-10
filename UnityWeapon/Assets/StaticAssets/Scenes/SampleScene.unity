@@ -96,6 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -130,6 +131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 117657484}
   - component: {fileID: 117657483}
+  - component: {fileID: 117657485}
   m_Layer: 0
   m_Name: Weapon
   m_TagString: Untagged
@@ -174,6 +176,31 @@ Transform:
   m_Father: {fileID: 963194228}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &117657485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 117657482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62ab2469ac25bbd40b6acf30349cfdb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _parent: {fileID: 117657484}
+  _edgeCount: 10
+  _distance: 2
+  _begin:
+    Radius: 0.25
+    ColorRadius: {r: 0, g: 1, b: 0, a: 1}
+    Accuracy: 0.75
+    ColorAccuracy: {r: 1, g: 1, b: 0, a: 1}
+  _end:
+    Radius: 0.75
+    ColorRadius: {r: 0, g: 1, b: 0, a: 1}
+    Accuracy: 0.25
+    ColorAccuracy: {r: 1, g: 1, b: 0, a: 1}
 --- !u!1 &191156810
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,6 +247,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -291,8 +319,9 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   m_Enabled: 1
-  serializedVersion: 9
+  serializedVersion: 10
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10

@@ -21,6 +21,7 @@ namespace Weapons
 
         [SerializeField] protected int _flowLengthDraw;
         [SerializeField] protected Transform _bulletFlowPath;
+        [SerializeField] protected Aiming.Accuracy _accuracy;
 
         [SerializeField] protected int _activeAmmo;
         [SerializeField] protected AmmoComputeData _ammo;
@@ -65,6 +66,10 @@ namespace Weapons
         public Shooting.ShootingMode Mode
         {
             get { return _shooting.Data[_activeShooting]; }
+        }
+        public Aiming.Accuracy Accuracy
+        {
+            get { return this._accuracy; }
         }
         public Ammo.AmmoController Ammo
         {
