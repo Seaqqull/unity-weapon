@@ -92,6 +92,11 @@ namespace Weapons.Bullets
             Destroy(gameObject);
         }
 
+        protected virtual void OnTargetHit(Utility.Data.IEntity affectedEntity)
+        {
+            affectedEntity.ModifyHealth(_damage);
+        }
+
         protected virtual void OnBulletDestroy(Collider hit, bool spawnInHit = false)
         {
             // Emit destoy particles
