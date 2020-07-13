@@ -5,7 +5,7 @@ using System;
 
 namespace Weapons
 {
-    public class Weapon : BaseMonoBehaviour, Utility.Data.IRunLater
+    public class Weapon : BaseMonoBehaviour, Utility.IRunLater
     {
         #region InnerClasses
         [Flags]

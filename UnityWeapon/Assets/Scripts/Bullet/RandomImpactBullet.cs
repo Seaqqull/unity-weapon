@@ -13,7 +13,7 @@ namespace Weapons.Bullets
         }
 
 
-        protected override void OnTargetHit(Utility.Data.IEntity affectedEntity)
+        protected override void OnTargetHit(Utility.IEntity affectedEntity)
         {
             base.OnTargetHit(affectedEntity);
 

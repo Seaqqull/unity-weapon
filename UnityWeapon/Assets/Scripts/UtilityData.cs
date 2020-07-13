@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace Utility.Data
+namespace Utility
 {
     public interface IRunLater
     {        

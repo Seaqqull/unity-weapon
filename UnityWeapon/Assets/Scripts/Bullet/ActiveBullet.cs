@@ -92,7 +92,7 @@ namespace Weapons.Bullets
             Destroy(gameObject);
         }
 
-        protected virtual void OnTargetHit(Utility.Data.IEntity affectedEntity)
+        protected virtual void OnTargetHit(Utility.IEntity affectedEntity)
         {
             affectedEntity.ModifyHealth(_damage);
         }

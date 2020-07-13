@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
+using System;
 
 
 namespace Weapons.Bullets
 {
-    public class DelayedBullet : RandomImpactBullet
+    public class DelayedBullet : RandomImpactBullet, Utility.IRunLater
     {
-        [SerializeField] [Range(0, ushort.MaxValue)] private float m_lifetime = 0.5f;
+        [SerializeField] [Range(0, ushort.MaxValue)] private float _lifetime = 0.5f;
 
-        private List<Utility.Data.IEntity> _affectedEntities;
+        private List<Utility.IEntity> _affectedEntities;
 
 
         protected override void OnTriggerEnter(Collider other)
@@ -16,7 +18,7 @@ namespace Weapons.Bullets
             if ((!_isLaunched) ||
                 (((1 << other.gameObject.layer) & _targetMask) == 0)) return;
 
-            Utility.Data.IEntity affectedEntity = other.GetComponent<Utility.Data.IEntity>();
+            Utility.IEntity affectedEntity = other.GetComponent<Utility.IEntity>();
             if ((affectedEntity != null) && !IsEntityAffected(affectedEntity))
             {
                 OnBulletHit();
@@ -31,11 +33,12 @@ namespace Weapons.Bullets
         {
             base.OnBulletStart();
 
-            _affectedEntities = new List<Utility.Data.IEntity>();
-            Invoke("OnBulletDestroy", m_lifetime);
+            _affectedEntities = new List<Utility.IEntity>();
+
+            RunLater(()=> { OnBulletDestroy(); }, _lifetime);
         }
 
-        private bool IsEntityAffected(Utility.Data.IEntity hittedEntity)
+        private bool IsEntityAffected(Utility.IEntity hittedEntity)
         {
             for (int i = 0; i < _affectedEntities.Count; i++)
             {
@@ -45,5 +48,26 @@ namespace Weapons.Bullets
             return false;
         }
 
+
+        #region RunLater
+        public void RunLater(Action method, float waitSeconds)
+        {
+            RunLaterValued(method, waitSeconds);
+        }
+
+        public Coroutine RunLaterValued(Action method, float waitSeconds)
+        {
+            if ((waitSeconds < 0) || (method == null))
+                return null;
+
+            return StartCoroutine(RunLaterCoroutine(method, waitSeconds));
+        }
+
+        public IEnumerator RunLaterCoroutine(Action method, float waitSeconds)
+        {
+            yield return new WaitForSeconds(waitSeconds);
+            method();
+        }
+        #endregion
     }
 }

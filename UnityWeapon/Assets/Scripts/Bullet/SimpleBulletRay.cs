@@ -53,7 +53,7 @@ namespace Weapons.Bullets
                 if ((_isLaunched) &&
                     ((1 << hit.collider.gameObject.layer) & _targetMask) != 0)
                 {
-                    Utility.Data.IEntity affectedTarget = hit.collider.GetComponent<Utility.Data.IEntity>();
+                    Utility.IEntity affectedTarget = hit.collider.GetComponent<Utility.IEntity>();
 
                     if (affectedTarget != null)
                     {
