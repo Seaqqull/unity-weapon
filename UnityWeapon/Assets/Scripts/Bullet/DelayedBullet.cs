@@ -15,17 +15,14 @@ namespace Weapons.Bullets
 
         protected override void OnTriggerEnter(Collider other)
         {
-            if ((!_isLaunched) ||
-                (((1 << other.gameObject.layer) & _targetMask) == 0)) return;
+            Utility.IEntity affectedEntity = CheckBulletCollision(other);
+            if ((affectedEntity == null) || IsEntityAffected(affectedEntity))
+                return;
 
-            Utility.IEntity affectedEntity = other.GetComponent<Utility.IEntity>();
-            if ((affectedEntity != null) && !IsEntityAffected(affectedEntity))
-            {
-                OnBulletHit();
-                OnTargetHit(affectedEntity);
-                
-                _affectedEntities.Add(affectedEntity);
-            }
+            OnBulletHit();
+            OnTargetHit(affectedEntity);
+
+            _affectedEntities.Add(affectedEntity);
         }
 
 

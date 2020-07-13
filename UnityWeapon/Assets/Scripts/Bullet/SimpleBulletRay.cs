@@ -26,7 +26,18 @@ namespace Weapons.Bullets
             _previousPosition = Transform.position;
         }
 
-        protected override void OnTriggerEnter(Collider other) { }
+        protected override void OnTriggerEnter(Collider other) 
+        {
+            Utility.IEntity affectedEntity = CheckBulletCollision(other);
+
+            if (affectedEntity != null)
+            {
+                OnBulletHit();
+                OnTargetHit(affectedEntity);
+            }
+
+            OnBulletDestroy(other, true);
+        }
 
 
         protected override void InitStart()
@@ -39,31 +50,26 @@ namespace Weapons.Bullets
         private void CheckCollision(Vector3 position)
         {
             RaycastHit hit;
+
+            float dist = Vector3.Distance(Transform.position, position);
             Vector3 direction = Transform.position - position;
-            Ray ray = new Ray(position, direction);
-            float dist = Vector3.Distance(Transform.position, position); //!
+            Ray ray = new Ray(position, direction);            
 
-            if (Physics.Raycast(ray, out hit, dist, _targetMask))
-            {
-                //Transform.position = hit.point;
-                Quaternion rot = Quaternion.FromToRotation(Vector3.forward, hit.normal);
-                Vector3 pos = hit.point;
+            if (!Physics.Raycast(ray, out hit, dist, _targetMask))
+                return;
 
+            Quaternion rot = Quaternion.FromToRotation(Vector3.forward, hit.normal);
+            Vector3 pos = hit.point;
 
-                if ((_isLaunched) &&
-                    ((1 << hit.collider.gameObject.layer) & _targetMask) != 0)
-                {
-                    Utility.IEntity affectedTarget = hit.collider.GetComponent<Utility.IEntity>();
+            Utility.IEntity affectedEntity = CheckBulletCollision(hit.collider);
 
-                    if (affectedTarget != null)
-                    {
-                        OnBulletHit();
-                        OnTargetHit(affectedTarget);
-                    }
-                }
-
-                OnBulletDestroy(hit, true);
+            if (affectedEntity != null) 
+            { 
+                    OnBulletHit();
+                    OnTargetHit(affectedEntity);
             }
+
+            OnBulletDestroy(hit, true);            
         }
     }
 }

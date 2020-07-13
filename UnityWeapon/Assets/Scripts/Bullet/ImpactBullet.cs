@@ -12,6 +12,7 @@ namespace Weapons.Bullets
             get { return this._impactPower; }
         }
 
+
         protected override void OnTargetHit(Utility.IEntity affectedEntity)
         {
             base.OnTargetHit(affectedEntity);

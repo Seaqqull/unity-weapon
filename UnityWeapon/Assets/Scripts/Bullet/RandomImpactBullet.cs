@@ -15,7 +15,7 @@ namespace Weapons.Bullets
 
         protected override void OnTargetHit(Utility.IEntity affectedEntity)
         {
-            base.OnTargetHit(affectedEntity);
+            affectedEntity.ModifyHealth(_damage);
 
             if (Random.Range(0.0f, 1.0f) <= _impactChance)
                 affectedEntity.ApplyForce(Transform.forward * ImpactPower);

@@ -60,7 +60,7 @@ namespace Weapons.Bullets
             return (_range < 0.0f) ? false :
                 (_startPosition - Position).sqrMagnitude > _range;
         }
-
+        
         protected virtual void InitAwake()
         {
             _isAwakeInited = true;
@@ -91,10 +91,21 @@ namespace Weapons.Bullets
         {
             Destroy(gameObject);
         }
-
+        
         protected virtual void OnTargetHit(Utility.IEntity affectedEntity)
         {
             affectedEntity.ModifyHealth(_damage);
+        }
+
+        protected virtual Utility.IEntity CheckBulletCollision(Collider obstacle)
+        {
+            if ((_isLaunched) &&
+                ((1 << obstacle.gameObject.layer) & _targetMask) != 0)
+            {
+                return obstacle.GetComponent<Utility.IEntity>();
+            }
+
+            return null;
         }
 
         protected virtual void OnBulletDestroy(Collider hit, bool spawnInHit = false)
