@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEngine.Events;
+using UnityEngine;
 
 
 namespace Weapons.Data
@@ -12,7 +13,6 @@ namespace Weapons.Data
 
     public enum WeaponState { None, Idle, Shooting, Reload }
     public enum WeaponType { None, Light, Medium, Heavy }
-
 
 
     public abstract class Range<T>
@@ -33,5 +33,13 @@ namespace Weapons.Data
 
             return (divisor == 0.0f)? 0.0f : Value / divisor; 
         }
+    }
+
+
+    [System.Serializable]
+    public class ActionResponce
+    {
+        public UnityEvent UiResponce;
+        public System.Action CodeResponce;
     }
 }

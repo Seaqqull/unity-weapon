@@ -9,7 +9,7 @@ namespace Weapons
     {
         #region InnerClasses
         [Flags]
-        public enum UIUpdateMode { None, MagazineAmount, OverallAmount, Progress = 4}
+        public enum UIUpdateMode { None, MagazineAmount, OverallAmount, Progress = 4 }
         [System.Serializable]
         public class AmmoComputeData : Utility.ComputingData<Ammo.AmmoHandler, Ammo.AmmoController> { }
         [System.Serializable]
@@ -18,14 +18,19 @@ namespace Weapons
 
         #region EditorVariables
         [SerializeField] private Data.WeaponType _type;
-
+        [Header("Aiming")]
         [SerializeField] protected int _flowLengthDraw;
         [SerializeField] protected Transform _bulletFlowPath;
         [SerializeField] protected Aiming.Accuracy _accuracy;
-
+        [Header("Responces")]
+        [SerializeField] protected Data.ActionResponce _onShot;
+        [SerializeField] protected Data.ActionResponce _onReload;
+        [SerializeField] protected Data.ActionResponce _onChangeAmmo;
+        [SerializeField] protected Data.ActionResponce _onChangeShootingMode;
+        [Header("Ammo")]
         [SerializeField] protected int _activeAmmo;
         [SerializeField] protected AmmoComputeData _ammo;
-
+        [Header("Shooting")]
         [SerializeField] protected int _activeShooting;
         [SerializeField] protected ShootingComputeObject _shooting;
         #endregion
@@ -33,30 +38,50 @@ namespace Weapons
         #region Variables
         protected Coroutine _progressCoroutine;
         protected Coroutine _actionCoroutine;
-        
-        protected Action<Weapon> _onMagazineAmmoChange;
+
+        protected Action<Weapon> _onMagazineAmmoChangeUI;
         protected Action<float> _onActionProgress;
-        protected Action<Weapon> _onAmmoChange;
+        protected Action<Weapon> _onAmmoChangeUI;
 
         protected Data.FloatRange _actionProgress;
         protected Data.WeaponState _state;
         #endregion
 
         #region Fields
-        public event Action<Weapon> OnMagazineAmmoChange
+        public event Action<Weapon> OnUIMagazineAmmoChange
         {
-            add { _onMagazineAmmoChange += value; }
-            remove { _onMagazineAmmoChange -= value; }
+            add { _onMagazineAmmoChangeUI += value; }
+            remove { _onMagazineAmmoChangeUI -= value; }
         }
         public event Action<float> OnActionProgress
         {
             add { _onActionProgress += value; }
             remove { _onActionProgress -= value; }
         }
-        public event Action<Weapon> OnAmmoChange
+        public event Action<Weapon> OnUIAmmoChange
         {
-            add { _onAmmoChange += value; }
-            remove { _onAmmoChange -= value; }
+            add { _onAmmoChangeUI += value; }
+            remove { _onAmmoChangeUI -= value; }
+        }
+        public event Action OnChangeShootingMode
+        {
+            add { _onChangeShootingMode.CodeResponce += value; }
+            remove { _onChangeShootingMode.CodeResponce -= value; }
+        }
+        public event Action OnChangeAmmo
+        {
+            add { _onChangeAmmo.CodeResponce += value; }
+            remove { _onChangeAmmo.CodeResponce -= value; }
+        }
+        public event Action OnReload
+        {
+            add { _onReload.CodeResponce += value; }
+            remove { _onReload.CodeResponce -= value; }
+        }
+        public event Action OnShot
+        {
+            add { _onShot.CodeResponce += value; }
+            remove { _onShot.CodeResponce -= value; }
         }
 
         public Ammo.AmmoHandler AmmoHandler
@@ -114,22 +139,54 @@ namespace Weapons
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(_bulletFlowPath.position, _bulletFlowPath.position + _bulletFlowPath.forward * _flowLengthDraw);
         }
-        
 
-        protected bool CanReload()
-        {
-            if ((_actionCoroutine != null) ||
-                        !_ammo.Handler.IsReloadPossible(_ammo.Data[_activeAmmo]))
-                return false;
-            return true;
-        }
 
         protected bool ReloadInstant()
         {
-            if (!CanReload())
+            if (!IsReloadPossible())
                 return false;
 
             _ammo.Handler.Reload(_ammo.Data[_activeAmmo]);
+
+            return true;
+        }
+
+        private bool ChangeAmmoType(bool modeDestination)
+        {
+            if ((_actionCoroutine != null) ||
+                (_ammo.Data.Count <= 1))
+                return false;
+
+            int newIndex = (modeDestination) ?
+                _activeAmmo + 1 : _activeAmmo - 1;
+
+            if ((newIndex < 0) ||
+                (newIndex >= _ammo.Data.Count))
+            {
+                newIndex = (modeDestination) ? 0 : _ammo.Data.Count - 1;
+            }
+
+            _activeAmmo = newIndex;
+
+            return true;
+        }
+
+        private bool ChangeShootingMode(bool modeDestination)
+        {
+            if ((_actionCoroutine != null) ||
+                (_shooting.Data.Count <= 1))
+                return false;
+
+            int newIndex = (modeDestination) ?
+                _activeShooting + 1 : _activeShooting - 1;
+
+            if ((newIndex < 0) ||
+                (newIndex >= _shooting.Data.Count))
+            {
+                newIndex = (modeDestination) ? 0 : _shooting.Data.Count - 1;
+            }
+
+            _activeShooting = newIndex;
 
             return true;
         }
@@ -139,14 +196,14 @@ namespace Weapons
             _actionProgress.Min = min;
             _actionProgress.Max = max;
             _actionProgress.Value = min;
-            
+
             while (_actionProgress.Value < _actionProgress.Max)
             {
                 UpdateUI(UIUpdateMode.Progress);
 
                 yield return null;
                 _actionProgress.Value += Time.deltaTime;
-            }            
+            }
 
             _actionProgress.Min = 0.0f;
             _actionProgress.Max = 0.0f;
@@ -163,9 +220,13 @@ namespace Weapons
             int currentSMode = _activeShooting;
 
             _shooting.Data[_activeShooting].Perform(this);
-            
+
+            _onShot.UiResponce?.Invoke();
+            _onShot.CodeResponce?.Invoke();
+
+
             _state = Data.WeaponState.Shooting;
-            _progressCoroutine = 
+            _progressCoroutine =
                 StartCoroutine(UpdateProgress(0, _shooting.Data[currentSMode].TimeBetweenShot));
 
             UpdateUI(UIUpdateMode.MagazineAmount | UIUpdateMode.OverallAmount);
@@ -182,9 +243,12 @@ namespace Weapons
 
         public bool Reload()
         {
-            if (!CanReload()) return false;
+            if (!IsReloadPossible()) return false;
 
             int currentAmmo = _activeAmmo;
+
+            _onReload.UiResponce?.Invoke();
+            _onReload.CodeResponce?.Invoke();
 
             _state = Data.WeaponState.Reload;
             _progressCoroutine =
@@ -203,16 +267,6 @@ namespace Weapons
             return true;
         }
 
-        public void UpdateUI(UIUpdateMode uiUpdateMode)
-        {
-            if ((uiUpdateMode & UIUpdateMode.OverallAmount) != 0)
-                _onAmmoChange?.Invoke(this);
-            if ((uiUpdateMode & UIUpdateMode.MagazineAmount) != 0)
-                _onMagazineAmmoChange?.Invoke(this);
-            if ((uiUpdateMode & UIUpdateMode.Progress) != 0)
-                _onActionProgress?.Invoke(_actionProgress.GetAverage());
-        }
-
         public void BreakAction()
         {
             if (_progressCoroutine != null)
@@ -225,7 +279,7 @@ namespace Weapons
             {
                 StopCoroutine(_actionCoroutine);
                 _actionCoroutine = null;
-            }                                        
+            }
         }
 
         public bool IsShotPossible()
@@ -235,6 +289,98 @@ namespace Weapons
                 !_shooting.Data[_activeShooting].IsExecutable(this))
                 return false;
             return true;
+        }
+
+        public bool IsReloadPossible()
+        {
+            if ((_actionCoroutine != null) ||
+                        !_ammo.Handler.IsReloadPossible(_ammo.Data[_activeAmmo]))
+                return false;
+            return true;
+        }
+
+
+        public bool NextAmmoType()
+        {
+            if (!ChangeAmmoType(true))
+                return false;
+
+            _onChangeAmmo.UiResponce?.Invoke();
+            _onChangeAmmo.CodeResponce?.Invoke();
+
+            return true;
+        }
+
+        public bool PreviousAmmoType()
+        {
+            if (!ChangeAmmoType(false))
+                return false;
+
+            _onChangeAmmo.UiResponce?.Invoke();
+            _onChangeAmmo.CodeResponce?.Invoke();
+
+            return true;
+        }
+        
+        public bool NextShootingMode()
+        {
+            if (!ChangeShootingMode(true))
+                return false;
+
+            _onChangeShootingMode.UiResponce?.Invoke();
+            _onChangeShootingMode.CodeResponce?.Invoke();
+
+            return true;
+        }
+
+        public bool PreviousShootingMode()
+        {
+            if (!ChangeShootingMode(false))
+                return false;
+
+            _onChangeShootingMode.UiResponce?.Invoke();
+            _onChangeShootingMode.CodeResponce?.Invoke();
+
+            return true;
+        }
+
+        public bool ChangeAmmoType(int index)
+        {
+            if ((_actionCoroutine != null) ||
+                ((index < 0) || (index >= _ammo.Data.Count)))
+                return false;
+            
+            _activeAmmo = index;
+
+            _onChangeAmmo.UiResponce?.Invoke();
+            _onChangeAmmo.CodeResponce?.Invoke();
+
+            return true;
+        }
+
+        public bool ChangeShootingMode(int index)
+        {
+            if ((_actionCoroutine != null) ||
+                ((index < 0) || (index >= _shooting.Data.Count)))
+                return false;
+
+            _activeShooting = index;
+
+            _onChangeShootingMode.UiResponce?.Invoke();
+            _onChangeShootingMode.CodeResponce?.Invoke();
+
+            return true;
+        }
+
+
+        public void UpdateUI(UIUpdateMode uiUpdateMode)
+        {
+            if ((uiUpdateMode & UIUpdateMode.OverallAmount) != 0)
+                _onAmmoChangeUI?.Invoke(this);
+            if ((uiUpdateMode & UIUpdateMode.MagazineAmount) != 0)
+                _onMagazineAmmoChangeUI?.Invoke(this);
+            if ((uiUpdateMode & UIUpdateMode.Progress) != 0)
+                _onActionProgress?.Invoke(_actionProgress.GetAverage());
         }
 
 
