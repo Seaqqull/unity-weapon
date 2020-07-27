@@ -44,6 +44,9 @@ namespace Weapons
         protected Action<Weapon> _onAmmoChangeUI;
 
         protected Data.FloatRange _actionProgress;
+
+        protected Data.StateInfo _stateInfo;
+        protected Action _stateResultAciton;
         protected Data.WeaponState _state;
         #endregion
 
@@ -128,6 +131,7 @@ namespace Weapons
             base.Awake();
 
             _actionProgress = new Data.FloatRange();
+            _stateInfo = new Data.StateInfo();
 
             ReloadInstant();
         }
@@ -138,6 +142,27 @@ namespace Weapons
 
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(_bulletFlowPath.position, _bulletFlowPath.position + _bulletFlowPath.forward * _flowLengthDraw);
+        }
+
+        protected void OnEnable()
+        {
+            if ((_stateInfo.IsEmpty) || 
+                (_stateInfo.TimeRemaining == 0.0f)) return;
+
+            _state = (Data.WeaponState)_stateInfo.Id;
+            
+            _progressCoroutine =
+                StartCoroutine(UpdateProgress(0.0f, _stateInfo.TimeRemaining));
+
+            _actionCoroutine = RunLaterValued(_stateResultAciton,
+                _stateInfo.TimeRemaining);
+        }
+
+        protected void OnDisable()
+        {
+            if (_stateInfo.IsEmpty) return;
+
+            _stateInfo.CalculateRemaining();
         }
 
 
@@ -219,23 +244,30 @@ namespace Weapons
 
             int currentSMode = _activeShooting;
 
-            _shooting.Data[_activeShooting].Perform(this);
+            _shooting.Data[currentSMode].Perform(this);
 
             _onShot.UiResponce?.Invoke();
             _onShot.CodeResponce?.Invoke();
 
 
             _state = Data.WeaponState.Shooting;
+            _stateInfo.Remember((int)_state, _shooting.Data[currentSMode].TimeBetweenShot);
+
             _progressCoroutine =
-                StartCoroutine(UpdateProgress(0, _shooting.Data[currentSMode].TimeBetweenShot));
+                StartCoroutine(UpdateProgress(0, _stateInfo.TimeRemaining));
 
             UpdateUI(UIUpdateMode.MagazineAmount | UIUpdateMode.OverallAmount);
 
-            _actionCoroutine = RunLaterValued(() =>
+            _stateResultAciton = () =>
             {
                 _actionCoroutine = null;
+
                 _state = Data.WeaponState.Idle;
-            }, _shooting.Data[currentSMode].TimeBetweenShot);
+                _stateInfo.Forget();
+            };
+
+            _actionCoroutine = RunLaterValued(_stateResultAciton,
+                _stateInfo.TimeRemaining);
 
 
             return true;
@@ -251,17 +283,24 @@ namespace Weapons
             _onReload.CodeResponce?.Invoke();
 
             _state = Data.WeaponState.Reload;
-            _progressCoroutine =
-                StartCoroutine(UpdateProgress(0, _ammo.Data[currentAmmo].ReloadTime));
+            _stateInfo.Remember((int)_state, _ammo.Data[currentAmmo].ReloadTime);
 
-            _actionCoroutine = RunLaterValued(() =>
+            _progressCoroutine =
+                StartCoroutine(UpdateProgress(0, _stateInfo.TimeRemaining));
+
+            _stateResultAciton = () =>
             {
-                _ammo.Handler.Reload(_ammo.Data[_activeAmmo]);
+                _ammo.Handler.Reload(_ammo.Data[currentAmmo]); // Was _activeAmmo
                 UpdateUI(UIUpdateMode.MagazineAmount | UIUpdateMode.OverallAmount);
 
                 _actionCoroutine = null;
+
                 _state = Data.WeaponState.Idle;
-            }, _ammo.Data[currentAmmo].ReloadTime);
+                _stateInfo.Forget();
+            };
+
+            _actionCoroutine = RunLaterValued(_stateResultAciton,
+                _stateInfo.TimeRemaining);
 
 
             return true;
