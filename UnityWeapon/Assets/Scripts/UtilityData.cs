@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace Utility
+namespace Weapon.Utility
 {
     public interface IRunLater
     {        
@@ -15,7 +15,7 @@ namespace Utility
     {
         int Id { get; }
 
-        
+
         void ModifyHealth(int amount);
         void ApplyForce(Vector3 amount);
     }

@@ -7,8 +7,7 @@ namespace Weapons.Bullets
     {
         protected override void OnTriggerEnter(Collider other)
         {
-            Utility.IEntity affectedEntity = CheckBulletCollision(other);
-
+            var affectedEntity = CheckBulletCollision(other);
             if (affectedEntity != null)
             {
                 OnBulletHit();

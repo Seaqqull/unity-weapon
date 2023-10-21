@@ -7,13 +7,10 @@ namespace Weapons.Bullets
     {
         [SerializeField, Range(0.0f, 1.0f)] protected float _impactChance = 1.0f;
 
-        public float ImpactChance
-        {
-            get { return this._impactChance; }
-        }
+        public float ImpactChance => _impactChance;
 
 
-        protected override void OnTargetHit(Utility.IEntity affectedEntity)
+        protected override void OnTargetHit(global::Weapon.Utility.IEntity affectedEntity)
         {
             affectedEntity.ModifyHealth(_damage);
 

@@ -8,21 +8,21 @@ namespace Weapons.Ammo
     {
 #if UNITY_EDITOR
 #pragma warning disable CS0414
-        [SerializeField] [HideInInspector] private string Name = "Magazine";
+        [SerializeField] [HideInInspector] private string name = "Magazine";
 #pragma warning restore CS0414
 #endif
-        public Bullets.Bullet Bullet;
+        [field: SerializeField] public Bullets.BulletDataSO Bullet { get; private set; }
 
-        public int Capacity;
-        public int Amount;
-        public int MagazineCapacity;
+        [field: SerializeField] public int Capacity { get; private set; }
+        [field: SerializeField] public int Amount { get; set; }
+        [field: SerializeField] public int MagazineCapacity { get; private set; }
+        [field: Space]
+        [field: SerializeField] public bool IsAmountUnlimited { get; private set; }
+        [field: SerializeField] public bool IsMagazineAmountUnlimited { get; private set; }
+        [field: Space]
+        [field: SerializeField] public float ReloadTime { get; private set; }
 
-        public bool IsAmountUnlimited;
-        public bool IsMagazineAmountUnlimited;
-
-        public float ReloadTime;
-
-        [HideInInspector] public int MagazineCount;
-        [HideInInspector] public int MagazineAmount;
+        public int MagazineCount { get; set; }
+        public int MagazineAmount { get; set; }
     }
 }

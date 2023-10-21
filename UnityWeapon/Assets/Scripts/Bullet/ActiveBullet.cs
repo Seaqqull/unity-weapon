@@ -1,179 +1,163 @@
-﻿using UnityEngine;
+﻿using Weapons.Aiming;
+using UnityEngine;
+using System;
+using Weapon.Storage.Data;
+using Weapons.Bullets.Data;
 
 
 namespace Weapons.Bullets
 {
-    [System.Serializable]
+    [Serializable]
     [RequireComponent(typeof(Rigidbody))]
-    public abstract class ActiveBullet : BaseMonoBehaviour
+    public abstract class ActiveBullet : BaseMonoBehaviour, IBullet, IPoolable
     {
-        protected int _damage;
-        protected float _speed;
-        protected float _range;
         protected LayerMask _targetMask;
         protected Rigidbody _rigidbody;
 
-        protected bool _isLaunched;
-        protected bool _lookRotation;
-
-        protected bool _isAwakeInited;
-        protected bool _isStartInited;
-
         protected Vector3 _startPosition;
+        protected float _squaredRange;
+        protected bool _lookRotation;
+        protected bool _isLaunched;
+        protected float _speed;
+        protected float _range;
+        protected int _damage;
+
+        public event Action<ActiveBullet> OnDestroy;
+        public event Action<ActiveBullet> OnLaunch;
+        public event Action<ActiveBullet> OnHit;
+
+        public bool DistancePassed => _range > 0.0f && (Position - _startPosition).sqrMagnitude > _squaredRange;
+        public GameObject GameObject => GameObj;
+        public IPool Pooler { get; set; }
 
 
         protected override void Awake()
         {
             base.Awake();
 
-            InitAwake();
-        }
-
-        protected virtual void Start()
-        {
-            InitStart();
+            TryGetComponent<Rigidbody>(out _rigidbody);
         }
 
         protected virtual void FixedUpdate()
         {
-            if (!_isAwakeInited) InitAwake();
-            if (!_isStartInited) InitStart();
+            if (!_isLaunched || _speed == 0.0f) return;
 
-            if ((!_isLaunched) ||
-                (_speed == 0.0f)) return;
-
-            if (PassedDistance())
+            if (DistancePassed)
                 OnBulletDestroy();
-
             if (_lookRotation && _rigidbody.velocity != Vector3.zero)
-            {
                 Transform.rotation = Quaternion.LookRotation(_rigidbody.velocity);
-            }
         }
 
 
         protected abstract void OnTriggerEnter(Collider other);
 
 
-        protected bool PassedDistance()
-        {
-            return (_range < 0.0f) ? false :
-                (_startPosition - Position).sqrMagnitude > _range;
-        }
-        
-        protected virtual void InitAwake()
-        {
-            _isAwakeInited = true;
-
-            _rigidbody = GetComponent<Rigidbody>();            
-        }
-
-        protected virtual void InitStart()
-        {
-            _isStartInited = true;
-
-            _startPosition = Transform.position;
-            _rigidbody.AddForce(Transform.forward * _speed);
-        }
-
         protected virtual void OnBulletHit()
         {
-            // Emmit collision particles            
-            
+            OnHit?.Invoke(this);
         }
 
         protected virtual void OnBulletStart()
         {
-            // Emmit begin particle
+            _startPosition = Transform.position;
+            
+            _rigidbody.velocity = Vector3.zero;
+            _rigidbody.AddForce(Transform.forward * _speed);
+
+            OnLaunch?.Invoke(this);
         }
 
         protected virtual void OnBulletDestroy()
         {
-            Destroy(gameObject);
+            _rigidbody.velocity = Vector3.zero;
+            Pooler.Return(this);
         }
-        
-        protected virtual void OnTargetHit(Utility.IEntity affectedEntity)
+
+        protected virtual void OnTargetHit(global::Weapon.Utility.IEntity affectedEntity)
         {
             affectedEntity.ModifyHealth(_damage);
         }
 
-        protected virtual Utility.IEntity CheckBulletCollision(Collider obstacle)
+        protected virtual global::Weapon.Utility.IEntity CheckBulletCollision(Collider obstacle)
         {
-            if ((_isLaunched) &&
-                ((1 << obstacle.gameObject.layer) & _targetMask) != 0)
-            {
-                return obstacle.GetComponent<Utility.IEntity>();
-            }
-
-            return null;
+            return (_isLaunched && ((1 << obstacle.gameObject.layer) & _targetMask) != 0) 
+                ? obstacle.GetComponent<global::Weapon.Utility.IEntity>() 
+                : null;
         }
 
         protected virtual void OnBulletDestroy(Collider hit, bool spawnInHit = false)
         {
-            // Emit destoy particles
-
-            OnBulletDestroy();
+            PoolIn();
         }
 
         protected virtual void OnBulletDestroy(RaycastHit hit, bool spawnInHit = false)
         {
-            // Emit destoy particles
-
-            OnBulletDestroy();
+            PoolIn();
         }
 
         protected void SpawnOnPosition(GameObject objectToSpawn, Transform hit, bool spawnInHit = false)
         {
-            Quaternion rot = Quaternion.FromToRotation(Vector3.forward, hit.transform.position.normalized);
-            Vector3 pos = hit.transform.position;
+            var rot = Quaternion.FromToRotation(Vector3.forward, hit.transform.position.normalized);
+            var pos = hit.transform.position;
 
-            GameObject spawnedObj = Instantiate(objectToSpawn, pos, rot);
+            var spawnedObj = Instantiate(objectToSpawn, pos, rot);
             if (spawnInHit)
-            {
                 spawnedObj.transform.SetParent(hit);
-            }
         }
 
         protected void SpawnOnPosition(GameObject objectToSpawn, RaycastHit hit, bool spawnInHit = false)
         {
-            Quaternion rot = Quaternion.FromToRotation(Vector3.forward, hit.normal);
-            Vector3 pos = hit.point;
+            var rot = Quaternion.FromToRotation(Vector3.forward, hit.normal);
+            var pos = hit.point;
 
-            GameObject spawnedObj = Instantiate(objectToSpawn, pos, rot);
+            var spawnedObj = Instantiate(objectToSpawn, pos, rot);
             if (spawnInHit)
-            {
                 spawnedObj.transform.SetParent(hit.collider.transform);
-            }
+        }
+        
+        public void PoolIn()
+        {
+            OnDestroy?.Invoke(this);
+            
+            OnBulletDestroy();
         }
 
+        public void PoolOut() { }
 
-        public void Lunch()
+        public void Launch()
         {
             _isLaunched = true;
 
             OnBulletStart();
         }
 
-        public void BakeData(Bullet bullet)
+        public void Bake(BulletDataSO data)
         {
-            _lookRotation = bullet.LookRotation;
-            _damage = bullet.Damage;
-            _speed = bullet.Speed;
-            _range = bullet.Range;
+            _lookRotation = data.LookRotation;
+            _damage = data.Damage;
+            _speed = data.Speed;
+            _range = data.Range;
+            _squaredRange = _range * _range;
 
-            _targetMask = bullet.TargetMask;
+            _targetMask = data.TargetMask;
         }
 
         public void BakeFlowDirection(Transform bulletFlow)
         {
-            Transform.position = bulletFlow.position;
-            Transform.rotation = bulletFlow.rotation;
+            BakeFlowDirection(bulletFlow, bulletFlow.rotation);
         }
 
-        public void BakeFlowDirection(System.Tuple<Vector3, Vector3> bulletFlow)
+        public void BakeFlowDirection(Accuracy.Line bulletFlow)
         {
-            Transform.position = bulletFlow.Item1;
-            Transform.rotation = Quaternion.LookRotation((bulletFlow.Item2 - bulletFlow.Item1).normalized);
+            Transform.position = bulletFlow.From;
+            Transform.rotation = Quaternion.LookRotation(bulletFlow.Direction);
         }
+        
+        public void BakeFlowDirection(Transform bulletFlow, Quaternion rotation)
+        {
+            Transform.position = bulletFlow.position;
+            Transform.rotation = rotation;
+        }
+
     }
 }

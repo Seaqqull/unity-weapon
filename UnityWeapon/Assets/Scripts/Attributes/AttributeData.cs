@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Attribute.Data
 {
-    public enum ValueType { Relative, Absolute }
+    public enum AttributeType { Relative, Absolute }
 
     public interface IAttribute
     {
@@ -19,14 +19,14 @@ namespace Attribute.Data
     public struct Attribute
     {
         public StringReference Name;
-        public ValueType Type;
+        public AttributeType Type;
         [Range(0, ushort.MaxValue)] public float Value;
     }
 
     public class AttributesController<T> where T : IAttribute
     {
 #pragma warning disable 0649
-        [SerializeField] private List<T> _items;
+        [SerializeField] private List<T> _items = new();
 #pragma warning restore 0649
 
         private Dictionary<string, float> _valuesAbsolute;
@@ -35,69 +35,42 @@ namespace Attribute.Data
         private IReadOnlyDictionary<string, float> _absolutes;
         private IReadOnlyDictionary<string, float> _relatives;        
 
-        public IReadOnlyDictionary<string, float> Absolutes
-        {
-            get { return this._absolutes; }
-        }
-        public IReadOnlyDictionary<string, float> Relatives
-        {
-            get { return this._relatives; }
-        }
+        public IReadOnlyDictionary<string, float> Absolutes => _absolutes;
+        public IReadOnlyDictionary<string, float> Relatives => _relatives;
 
 
-        private void AddAbsolute(Attribute attribute)
+        private void Add(Attribute attribute)
         {
-            if (!_valuesAbsolute.ContainsKey(attribute.Name))
-                _valuesAbsolute.Add(attribute.Name, attribute.Value);
+            var values = attribute.Type == AttributeType.Absolute ? _valuesAbsolute : _valuesRelative;
+            
+            if (!values.ContainsKey(attribute.Name))
+                values.Add(attribute.Name, attribute.Value);
             else
-            {
-                _valuesAbsolute[attribute.Name] =
-                    _valuesAbsolute[attribute.Name] + attribute.Value;
-            }
+                values[attribute.Name] =
+                    attribute.Type == AttributeType.Absolute 
+                        ? values[attribute.Name] + attribute.Value 
+                        : values[attribute.Name] * attribute.Value;
         }
-
-        private void AddRelative(Attribute attribute)
-        {
-            if (!_valuesRelative.ContainsKey(attribute.Name))
-                _valuesRelative.Add(attribute.Name, attribute.Value);
-            else
-            {
-                _valuesRelative[attribute.Name] =
-                    _valuesRelative[attribute.Name] * attribute.Value;
-            }            
-        }
-
 
         public void BakeAttributes()
         {
-            IAttribute[] attributes = 
-                System.Array.ConvertAll(_items.ToArray(), item => (IAttribute)item);
-
             _valuesAbsolute = new Dictionary<string, float>();
             _valuesRelative = new Dictionary<string, float>();
             _absolutes = _valuesAbsolute;
             _relatives = _valuesRelative;
 
-            for (int i = 0; i < attributes.Length; i++)
-            {
-                IAttribute attribute = attributes[i];
-                
-                if (attribute.Attribute.Type == ValueType.Absolute)
-                    AddAbsolute(attribute.Attribute);
-                else
-                    AddRelative(attribute.Attribute);
-            }
+            foreach (var attribute in _items)
+                Add(attribute.Attribute);
         }
 
         public float GetValue(string key)
         {
-            if ((key == null) || (key == string.Empty)) return 0.0f;
+            if (string.IsNullOrEmpty(key)) return 0.0f;
 
-            _valuesAbsolute.TryGetValue(key, out float valueAbsolute);
-            bool relativeExist = 
-                _valuesRelative.TryGetValue(key, out float valueRelative);
-
-            return (relativeExist) ? valueAbsolute * valueRelative : valueAbsolute;
+            _valuesAbsolute.TryGetValue(key, out var valueAbsolute);
+            return _valuesRelative.TryGetValue(key, out var valueRelative)
+                ? valueAbsolute * valueRelative
+                : valueAbsolute;
         }
     }
 }

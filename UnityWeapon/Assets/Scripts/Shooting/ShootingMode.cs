@@ -3,7 +3,7 @@
 
 namespace Weapons.Shooting
 {
-    public abstract class ShootingMode : Utility.ComputingHandler
+    public abstract class ShootingMode : global::Weapon.Utility.ComputingHandler
     {
         public int BulletsToPerformShot = 1;
         public float TimeBetweenShot = 0.1f;

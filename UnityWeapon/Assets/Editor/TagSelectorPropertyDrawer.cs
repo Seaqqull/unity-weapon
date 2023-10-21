@@ -34,7 +34,7 @@ public class TagSelectorPropertyDrawer : PropertyDrawer
             if (propertyValue != "")
             {
                 // Check if there is selected tag and then assign its index
-                for (int i = 1; i < tagValues.Count; i++)
+                for (var i = 1; i < tagValues.Count; i++)
                 {
                     if (tagValues[i] == propertyValue)
                     {

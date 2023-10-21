@@ -7,13 +7,10 @@ namespace Weapons.Bullets
     {
         [SerializeField] private float _impactPower;
 
-        public float ImpactPower
-        {
-            get { return this._impactPower; }
-        }
+        public float ImpactPower => _impactPower;
 
 
-        protected override void OnTargetHit(Utility.IEntity affectedEntity)
+        protected override void OnTargetHit(global::Weapon.Utility.IEntity affectedEntity)
         {
             base.OnTargetHit(affectedEntity);
 

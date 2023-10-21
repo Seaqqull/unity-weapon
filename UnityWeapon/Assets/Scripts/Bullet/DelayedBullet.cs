@@ -6,16 +6,16 @@ using System;
 
 namespace Weapons.Bullets
 {
-    public class DelayedBullet : RandomImpactBullet, Utility.IRunLater
+    public class DelayedBullet : RandomImpactBullet, global::Weapon.Utility.IRunLater
     {
         [SerializeField] [Range(0, ushort.MaxValue)] private float _lifetime = 0.5f;
 
-        private List<Utility.IEntity> _affectedEntities;
+        private List<global::Weapon.Utility.IEntity> _affectedEntities;
 
 
         protected override void OnTriggerEnter(Collider other)
         {
-            Utility.IEntity affectedEntity = CheckBulletCollision(other);
+            global::Weapon.Utility.IEntity affectedEntity = CheckBulletCollision(other);
             if ((affectedEntity == null) || IsEntityAffected(affectedEntity))
                 return;
 
@@ -30,14 +30,14 @@ namespace Weapons.Bullets
         {
             base.OnBulletStart();
 
-            _affectedEntities = new List<Utility.IEntity>();
+            _affectedEntities = new List<global::Weapon.Utility.IEntity>();
 
             RunLater(()=> { OnBulletDestroy(); }, _lifetime);
         }
 
-        private bool IsEntityAffected(Utility.IEntity hittedEntity)
+        private bool IsEntityAffected(global::Weapon.Utility.IEntity hittedEntity)
         {
-            for (int i = 0; i < _affectedEntities.Count; i++)
+            for (var i = 0; i < _affectedEntities.Count; i++)
             {
                 if (_affectedEntities[i].Id == hittedEntity.Id)
                     return true;

@@ -1,145 +1,150 @@
-﻿using UnityEngine;
+﻿using Random = UnityEngine.Random;
+using Weapons.Utility;
+using UnityEngine;
+using System;
 
 
 namespace Weapons.Aiming
 {
     public class Accuracy : BaseMonoBehaviour
     {
-        [System.Serializable]
+        public record Line(Vector3 From, Vector3 Direction);
+        [Serializable]
         public class Circle
         {
             public float Radius = 1;
-            public Color ColorRadius = new Color(0, 1, 0, 1);
             [Range(0, 1)] public float Accuracy = 1;
-            public Color ColorAccuracy = new Color(1, 1, 0, 1);
+        }
+        [Serializable]
+        private class CircleVisualization
+        {
+            public Color ColorRadius = new(0, 1, 0, 1);
+            public Color ColorAccuracy = new(1, 1, 0, 1);
         }
 
 
         [SerializeField] private Transform _parent;
-        [SerializeField] private int _edgeCount = 10;
-        [SerializeField] private float _distance = 1;
+        [SerializeField] private float _distance = 1.0f;
+        [Space]
         [SerializeField] private Circle _begin;
         [SerializeField] private Circle _end;
-
-        private Color _originalColor;
-
-        public Circle End
-        {
-            get { return this._end; }
-        }
-        public Circle Begin
-        {
-            get { return this._begin; }
-        }
-
+        [Header("Visualization")]
+        [SerializeField] private int _edgeCount = 10;
+        [SerializeField] private CircleVisualization _beginVisualization;
+        [SerializeField] private CircleVisualization _endVisualization;
 
 #if UNITY_EDITOR
+        private Vector3 beginLine, endLine;
+#endif
+
+        public Circle Begin => _begin;
+        public Circle End => _end;
+
+
         private void OnDrawGizmos()
         {
             if (_parent == null) return;
 
-            bool errorFlag;
-
-            // Inner            
-            errorFlag =
-                DrawCircleGizmo
-                (_parent.position, _parent.rotation, radius: _begin.Radius, color: _begin.ColorRadius) &&
-                DrawCircleGizmo
-                (_parent.position, _parent.rotation, radius: (_begin.Radius * (1 - _begin.Accuracy)), color: _begin.ColorAccuracy);
+            var errorFlag =
+                DrawCircleGizmo(_parent.position, _parent.rotation, radius: _begin.Radius, color: _beginVisualization.ColorRadius) &&
+                DrawCircleGizmo(_parent.position, _parent.rotation, radius: (_begin.Radius * (1 - _begin.Accuracy)), color: _beginVisualization.ColorAccuracy);
             if (!errorFlag)
-            {
-                Debug.Log("There are some wrong parameters in begin circle, so it can't be displayed properly.", GameObj);
-            }
+                Debug.LogWarning($"Wrong parameters ({nameof(Circle.Radius)}, {nameof(_edgeCount)})" +
+                                 " in begin circle, so it can't be displayed properly.", GameObj);
 
-
-            // Outer
             errorFlag =
-                DrawCircleGizmo
-                (_parent.position, _parent.rotation, offset: (_parent.forward * _distance), radius: _end.Radius, color: _end.ColorRadius) &&
-                DrawCircleGizmo
-                (_parent.position, _parent.rotation, offset: (_parent.forward * _distance), radius: (_end.Radius * (1 - _end.Accuracy)), color: _end.ColorAccuracy);
-
+                DrawCircleGizmo(_parent.position, _parent.rotation, offset: (_parent.forward * _distance), radius: _end.Radius, color: _endVisualization.ColorRadius) &&
+                DrawCircleGizmo(_parent.position, _parent.rotation, offset: (_parent.forward * _distance), radius: (_end.Radius * (1 - _end.Accuracy)), color: _endVisualization.ColorAccuracy);
             if (!errorFlag)
+                Debug.LogWarning($"Wrong parameters ({nameof(Circle.Radius)}, {nameof(_edgeCount)})" +
+                                 " in begin circle, so it can't be displayed properly.", GameObj);
+
+#if UNITY_EDITOR
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(beginLine, endLine);
+#endif
+            bool DrawCircleGizmo(Vector3 position, Quaternion rotation, Vector3 offset = new(), float radius = 0, Color color = new())
             {
-                Debug.Log("There are some wrong parameters in end circle, so it can't be displayed properly.", GameObj);
+                if (radius <= 0 && _edgeCount < 3) return false;
+
+                var positionWithOffset = position + offset;
+                var originalColor = Gizmos.color;
+                Gizmos.color = color;
+
+                var vertices = CreateCircle(positionWithOffset, rotation, radius, _edgeCount);
+                for (var i = 0; i < vertices.Length - 1; i++)
+                    Gizmos.DrawLine(vertices[i], vertices[i + 1]);
+
+                Gizmos.DrawLine(vertices[^1], vertices[0]);
+                Gizmos.color = originalColor;
+
+                return true;
             }
+        }
+
+
+#if UNITY_EDITOR
+        [ContextMenu("New random direction")]
+        private void MakeRandomDirection()
+        {
+            beginLine = CalculateVector(
+                _parent.position, 
+                _parent.rotation, 
+                _begin.Radius * (1 - _begin.Accuracy));
+            endLine = CalculateVector(
+                _parent.position + (_parent.forward * _distance), 
+                _parent.rotation, 
+                _end.Radius * (1 - _end.Accuracy));
         }
 #endif
 
 
-        private Vector3 CalculateVector(Vector3 position, Quaternion rotation, float radius)
-        {
-            Vector3 shift;
-            Vector2 rndPos = Random.insideUnitCircle * radius;
+        private static float MapAccuracy(float from, float ratio) =>
+            ratio >= 0.0f 
+                ? ratio >= 0.5f ? ratio.Map(0.5f, 1.0f, from * 2.0f, 1.0f) 
+                    : ratio.Map(0.0f, 0.5f, from, from * 2.0f)
+                : ratio < -0.5f ? ratio.Map(-0.5f, -1.0f, from * 0.5f, 0.0f) 
+                    : ratio.Map(0.0f, -0.5f, from, from * 0.5f);
 
-            shift = new
-                Vector3(rndPos.x, rndPos.y, 0);
+        private static Vector3 CalculateVector(Vector3 position, Quaternion rotation, float radius)
+        {
+            var rndPos = Random.insideUnitCircle * radius;
+            var shift = new Vector3(rndPos.x, rndPos.y, 0);
 
             return position + (rotation * shift);
         }
 
-        private Vector3[] CreateCircle(Vector3 position, Quaternion rotation, float radius, int edgeCount)
+        private static Vector3[] CreateCircle(Vector3 position, Quaternion rotation, float radius, int edgeCount)
         {
-            Vector3[] vertecies = new Vector3[edgeCount];
-
-            int cnter = 0;
-
-            for (float i = 0; i < 360.0f; i += (360.0f / edgeCount))
+            var angleStep = (360.0f / edgeCount);
+            var vertices = new Vector3[edgeCount];
+            
+            for (var i = 0; i < edgeCount; i++)
             {
-                Vector3 tmp = new Vector3(Mathf.Sin(Mathf.Deg2Rad * i) * radius, Mathf.Cos(Mathf.Deg2Rad * i) * radius, 0);
-                tmp = rotation * tmp;
+                var angle = i * angleStep;
+                var arcPoint = new Vector3(
+                    Mathf.Sin(Mathf.Deg2Rad *  angle) * radius, 
+                    Mathf.Cos(Mathf.Deg2Rad *  angle) * radius, 
+                    0);
 
-                vertecies[cnter++] = position + tmp;
+                vertices[i] = position + rotation * arcPoint;
             }
 
-            return vertecies;
+            return vertices;
         }
 
-        private bool DrawCircleGizmo(Vector3 position, Quaternion rotation, Vector3 offset = new Vector3(), float radius = 0, Color color = new Color())
+        public Line GetDirectionVector()
         {
-            if ((radius <= 0) &&
-                (_edgeCount < 3)) return false;
+            var begin = CalculateVector(
+                _parent.position, 
+                _parent.rotation, 
+                _begin.Radius * (1 - _begin.Accuracy));
+            var end = CalculateVector(
+                _parent.position + (_parent.forward * _distance), 
+                _parent.rotation, 
+                _end.Radius * (1 - _end.Accuracy));
 
-            Vector3 positionWithOffset = position + offset;
-            _originalColor = Gizmos.color;
-            Gizmos.color = color;
-
-            Vector3[] vertecies = CreateCircle(positionWithOffset, rotation, radius, _edgeCount);
-
-            for (int i = 0; i < vertecies.Length - 1; i++)
-            {
-                Gizmos.DrawLine(vertecies[i], vertecies[i + 1]);
-            }
-            Gizmos.DrawLine(vertecies[vertecies.Length - 1], vertecies[0]);
-
-            Gizmos.color = _originalColor;
-
-            return true;
-        }
-
-
-        public void SetEndAccuracy(float percent)
-        {
-            if ((percent < 0.0f) ||
-                (percent > 1.0f)) return;
-
-            _end.Accuracy = percent;
-        }
-
-        public void SetBeginAccuracy(float percent)
-        {
-            if ((percent < 0.0f) ||
-                (percent > 1.0f)) return;
-
-            _begin.Accuracy = percent;
-        }
-
-        public System.Tuple<Vector3, Vector3> GetDirectedVector()
-        {
-            Vector3 begin = CalculateVector(_parent.position, _parent.localRotation, (_begin.Radius * (1 - _begin.Accuracy)));
-            Vector3 end = CalculateVector(_parent.position + (_parent.forward * _distance), _parent.localRotation, (_end.Radius * (1 - _end.Accuracy)));
-
-            return new System.Tuple<Vector3, Vector3>(begin, end);
+            return new Line(begin, (end - begin).normalized);
         }
 
         /// <summary>
@@ -149,13 +154,47 @@ namespace Weapons.Aiming
         /// <param name="aspectRatio"> Velue between 0 and 2. Relation between begin and end accuracy.</param>
         public void SetGlobalAccuracy(float percent, float aspectRatio)
         {
-            if ((percent < 0.0f ||
-                 percent > 1.0f) ||
-                (aspectRatio < 0.0f ||
-                 aspectRatio > 2.0f)) return;
+            aspectRatio = Mathf.Clamp(aspectRatio, -1.0f, 1.0f);
+            percent = Mathf.Clamp01(percent);
 
-            SetBeginAccuracy(percent * (1 - (aspectRatio / 2.0f)));
-            SetEndAccuracy(percent * (aspectRatio / 2.0f));
+            if (aspectRatio == 0.0f)
+            {
+                _begin.Accuracy = percent;
+                _end.Accuracy = percent;
+                return;
+            }
+            
+            var absoluteAspectRatio = Mathf.Abs(aspectRatio);
+            var mappedAccuracy = MapAccuracy(percent, absoluteAspectRatio);
+            if (aspectRatio > 0.0f)
+            {
+                _begin.Accuracy = percent;
+                _end.Accuracy = mappedAccuracy;
+            }
+            else
+            {
+                _begin.Accuracy = mappedAccuracy;
+                _end.Accuracy = percent;
+            }
+        }
+        
+        public void SetGlobalAccuracyFromMiddle(float percent, float aspectRatio)
+        {
+            aspectRatio = Mathf.Clamp(aspectRatio, -1.0f, 1.0f);
+            percent = Mathf.Clamp01(percent);
+
+            if (aspectRatio == 0.0f)
+            {
+                _begin.Accuracy = percent;
+                _end.Accuracy = percent;
+                return;
+            }
+
+            var mappedEndAccuracy = MapAccuracy(percent, aspectRatio);
+            var mappedStartAccuracy = MapAccuracy(percent, -aspectRatio);
+
+            _begin.Accuracy = mappedStartAccuracy;
+            _end.Accuracy = mappedEndAccuracy;
         }
     }
 }

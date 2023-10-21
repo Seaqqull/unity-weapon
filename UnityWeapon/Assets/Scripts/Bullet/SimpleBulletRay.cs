@@ -1,21 +1,22 @@
 ﻿using UnityEngine;
-using System;
 
 
 namespace Weapons.Bullets
 {
     public class SimpleBulletRay : ImpactBullet
     {
+        /// <summary>
+        /// Rewrite using some sort of modificators.
+        /// </summary>
         public float ProjectileSpeedMultiplier;
 
         private Vector3 _previousPosition;
-
 
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
 
-            if (Math.Abs(ProjectileSpeedMultiplier) > float.Epsilon)
+            if (Mathf.Abs(ProjectileSpeedMultiplier) > float.Epsilon)
             {
                 _speed *= ProjectileSpeedMultiplier;
                 _rigidbody.AddForce(Transform.forward * (_speed * Time.fixedDeltaTime));
@@ -28,8 +29,7 @@ namespace Weapons.Bullets
 
         protected override void OnTriggerEnter(Collider other) 
         {
-            Utility.IEntity affectedEntity = CheckBulletCollision(other);
-
+            var affectedEntity = CheckBulletCollision(other);
             if (affectedEntity != null)
             {
                 OnBulletHit();
@@ -39,34 +39,32 @@ namespace Weapons.Bullets
             OnBulletDestroy(other, true);
         }
 
-
-        protected override void InitStart()
+        protected override void OnBulletStart()
         {
-            base.InitStart();
-
             _previousPosition = Transform.position;
+
+            base.OnBulletStart();
         }
 
         private void CheckCollision(Vector3 position)
         {
             RaycastHit hit;
 
-            float dist = Vector3.Distance(Transform.position, position);
-            Vector3 direction = Transform.position - position;
-            Ray ray = new Ray(position, direction);            
+            var dist = Vector3.Distance(Transform.position, position);
+            var direction = Transform.position - position;
+            var ray = new Ray(position, direction);            
 
             if (!Physics.Raycast(ray, out hit, dist, _targetMask))
                 return;
 
-            Quaternion rot = Quaternion.FromToRotation(Vector3.forward, hit.normal);
-            Vector3 pos = hit.point;
+            var rot = Quaternion.FromToRotation(Vector3.forward, hit.normal);
+            var pos = hit.point;
 
-            Utility.IEntity affectedEntity = CheckBulletCollision(hit.collider);
-
+            var affectedEntity = CheckBulletCollision(hit.collider);
             if (affectedEntity != null) 
             { 
-                    OnBulletHit();
-                    OnTargetHit(affectedEntity);
+                OnBulletHit();
+                OnTargetHit(affectedEntity);
             }
 
             OnBulletDestroy(hit, true);            
