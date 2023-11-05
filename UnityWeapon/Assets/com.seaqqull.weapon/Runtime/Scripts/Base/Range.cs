@@ -8,6 +8,9 @@ namespace Weapon.Base
         public T Min;
         public T Max;
 
+        public bool IsReached => Progress >= 1.0f;
+
+
         public void Reset()
         {
             Value = default;

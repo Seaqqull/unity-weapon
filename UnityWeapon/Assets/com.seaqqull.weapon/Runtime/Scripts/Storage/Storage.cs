@@ -6,20 +6,20 @@ namespace Weapon.Storage
 {
     public class Storage : IStorage
     {
-        private GameObject _owenr;
+        private GameObject _owner;
         private Dictionary<int, Pooler> _pools = new();
 
 
         public Storage(GameObject owner)
         {
-            _owenr = owner;
+            _owner = owner;
         }
 
 
         public void Populate(GameObject spawnObject, StorageData properties)
         {
-            if (!_pools.TryGetValue(properties.Id, out var pool))
-                _pools.Add(properties.Id, new Pooler(_owenr, spawnObject, properties));
+            if (!_pools.ContainsKey(properties.Id))
+                _pools.Add(properties.Id, new Pooler(_owner, spawnObject, properties));
         }
 
         public GameObject Pool(int id)

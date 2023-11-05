@@ -5,16 +5,17 @@ using UnityEngine.Events;
 using Weapon.Base;
 using Weapon.Storage;
 using Weapon.Storage.Data;
+using Weapons.Ammo;
 using Weapons.Data;
+using Weapons.Shooting;
 
 
 namespace Weapons
 {
-    public class Weapon : BaseMonoBehaviour, global::Weapon.Utility.IRunLater
+    public class Weapon : BaseMonoBehaviour, IGameObjectWeapon, global::Weapon.Utility.IRunLater
     {
         #region Constants
         private static readonly string BULLETS_CONTAINER = new("Bullets");
-        private static readonly Color BULLET_FLOW_COLOR = Color.yellow;
         #endregion
 
         #region EditorVariables
@@ -32,7 +33,7 @@ namespace Weapons
         [SerializeField] private UnityEvent _onAmmoChanged;
         [SerializeField] private UnityEvent _onShootingModeChanged;
         [SerializeField] private UnityEvent<WeaponState> _onStateChanged;
-        [Space] 
+        [Space]
         [SerializeField] private UiUpdateRate _uiUpdateRate = UiUpdateRate.FPS_Umlimited;
         [SerializeField] private UnityEvent<float> _onStateProgressUI;
         [SerializeField] private UnityEvent<Weapon> _onMagazineAmmoChangedUI;
@@ -93,23 +94,25 @@ namespace Weapons
             add => _onAmmoChangedUI.AddListener(value);
             remove => _onAmmoChangedUI.RemoveListener(value);
         }
-        
-        public Shooting.ShootingMode Mode => _shooting.Data[_activeShooting];
-        public Ammo.AmmoController Ammo => _ammo.Data[_activeAmmo];
-        public Ammo.AmmoHandler AmmoHandler => _ammo.Handler;
+
+        public IShootingMode Mode => _shooting.Data[_activeShooting];
+        public IShootingHandler ShootingHandler => _shooting.Handler;
+        public IAmmoController Ammo => _ammo.Data[_activeAmmo];
+        public IAmmoHandler AmmoHandler => _ammo.Handler;
         public Transform BulletFlow => _accuracy.Flow;
         public Aiming.Accuracy Accuracy => _accuracy;
+        public string Name => GameObj.name;
         public WeaponType Type => _type;
 
         public bool IsActionExecutable => _actionCoroutine == null;
         public bool IsReloadPossible => 
             IsActionExecutable && 
-            _ammo.Handler.IsReloadPossible(_ammo.Data[_activeAmmo]);
+            AmmoHandler.IsReloadPossible(_ammo.Data[_activeAmmo]);
         public bool IsMagazineEmpty => (Ammo.MagazineAmount == 0);
         public bool IsShotPossible =>
             IsActionExecutable &&
-            _shooting.Handler.IsExecutable(this) &&
-            _shooting.Data[_activeShooting].IsExecutable(this);
+            ShootingHandler.IsExecutable(this) &&
+            Mode.IsExecutable(this);
         public UiUpdateRate UiUpdateRate
         {
             get => _uiUpdateRate;
@@ -180,7 +183,7 @@ namespace Weapons
         }
 
 
-        protected bool ReloadInstantly()
+        private bool ReloadInstantly()
         {
             if (!IsReloadPossible) return false;
 
@@ -204,12 +207,12 @@ namespace Weapons
             return true;
         }
         
-        protected void UpdateUI(UIUpdateMode uiUpdateMode)
+        private void UpdateUI(UIUpdateMode uiUpdateMode)
         {
             if (uiUpdateMode.HasFlag(UIUpdateMode.OverallAmount))
-                _onAmmoChangedUI?.Invoke(this);
+                _onAmmoChangedUI.Invoke(this);
             if (uiUpdateMode.HasFlag(UIUpdateMode.MagazineAmount))
-                _onMagazineAmmoChangedUI?.Invoke(this);
+                _onMagazineAmmoChangedUI.Invoke(this);
             if (uiUpdateMode.HasFlag(UIUpdateMode.Progress))
                 _onStateProgressUI.Invoke(_actionProgress.Progress);
         }
@@ -223,7 +226,7 @@ namespace Weapons
             return true;
         }
 
-        protected IEnumerator ActionRoutine(float min, float max)
+        private IEnumerator ActionRoutine(float min, float max)
         {
             _actionProgress.Update(min, min, max);
             while (_actionProgress.Value < _actionProgress.Max)
@@ -262,9 +265,22 @@ namespace Weapons
             _stateResultAction = action;
         }
 
-        public GameObject NextBullet()
+
+        public bool Shoot()
         {
-            return _storage.Pool(_activeAmmo);
+            if (!IsShotPossible) return false;
+
+            Mode.Perform(this);
+            _onShot.Invoke();
+
+            Do(() =>
+            {
+                _stateInfo.Forget();
+                State = WeaponState.Idle;
+            }, WeaponState.Shooting, Mode.TimeBetweenShot);
+            UpdateUI(UIUpdateMode.MagazineAmount | UIUpdateMode.OverallAmount);
+
+            return true;
         }
 
         public void MakeShot()
@@ -272,22 +288,9 @@ namespace Weapons
             Shoot();
         }
 
-        public bool Shoot()
+        public GameObject NextBullet()
         {
-            if (!IsShotPossible) return false;
-
-            _shooting.Data[_activeShooting].Perform(this);
-
-            _onShot.Invoke();
-
-            Do(() =>
-            {
-                _stateInfo.Forget();
-                State = WeaponState.Idle;
-            }, WeaponState.Shooting, _shooting.Data[_activeShooting].TimeBetweenShot);
-            UpdateUI(UIUpdateMode.MagazineAmount | UIUpdateMode.OverallAmount);
-
-            return true;
+            return _storage.Pool(_activeAmmo);
         }
 
         // public void LockShoot(Action<bool> shotCallback)
@@ -305,7 +308,6 @@ namespace Weapons
             if (!IsReloadPossible) return false;
 
             var currentAmmo = _activeAmmo;
-
             _onReloaded.Invoke();
 
             Do(() =>
@@ -327,7 +329,7 @@ namespace Weapons
             StopCoroutine(_actionCoroutine);
             _actionCoroutine = null;
                 
-            _stateInfo.CalculateRemaining();
+            _stateInfo.CalculateRemaining(_actionProgress.Progress);
         }
 
         public void ResumeAction()
@@ -341,7 +343,6 @@ namespace Weapons
             if (!ChangeAmmoType(ChangeDirection.Forward)) return false;
 
             _onAmmoChanged.Invoke();
-
             return true;
         }
 
@@ -350,7 +351,6 @@ namespace Weapons
             if (!ChangeAmmoType(ChangeDirection.Back)) return false;
 
             _onAmmoChanged.Invoke();
-
             return true;
         }
         
@@ -359,7 +359,6 @@ namespace Weapons
             if (!ChangeShootingMode(ChangeDirection.Forward)) return false;
 
             _onShootingModeChanged.Invoke();
-
             return true;
         }
 
@@ -368,7 +367,6 @@ namespace Weapons
             if (!ChangeShootingMode(ChangeDirection.Back)) return false;
 
             _onShootingModeChanged.Invoke();
-
             return true;
         }
 
@@ -378,7 +376,6 @@ namespace Weapons
                 return false;
 
             _onAmmoChanged.Invoke();
-
             return true;
         }
 
@@ -388,7 +385,6 @@ namespace Weapons
                 return false;
 
             _onShootingModeChanged.Invoke();
-
             return true;
         }
 

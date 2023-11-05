@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using Weapons.Bullets;
 
 
 namespace Weapons.Ammo
 {
     [System.Serializable]
-    public class AmmoController
+    public class AmmoController : IAmmoController
     {
 #if UNITY_EDITOR
 #pragma warning disable CS0414
@@ -22,6 +23,7 @@ namespace Weapons.Ammo
         [field: Space]
         [field: SerializeField] public float ReloadTime { get; private set; }
 
+        public IBulletData BulletData => Bullet;
         public int MagazineCount { get; set; }
         public int MagazineAmount { get; set; }
     }

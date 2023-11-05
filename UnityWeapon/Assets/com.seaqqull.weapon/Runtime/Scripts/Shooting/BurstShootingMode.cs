@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using Weapons.Bullets.Data;
+﻿using Weapons.Bullets.Data;
+using UnityEngine;
 
 
 namespace Weapons.Shooting
@@ -7,10 +7,8 @@ namespace Weapons.Shooting
     [CreateAssetMenu(menuName = "Weapon/Shooting/Burst")]
     public class BurstShootingMode : ShootingMode
     {
-        public override void Perform(Weapon weapon)
+        private void EmmitBullet(IGameObjectWeapon weapon)
         {
-            weapon.AmmoHandler.SubtractAmmo(weapon.Ammo, 1);
-
             for (var i = 0; i < BulletsToPerformShot; i++)
             {
                 // Some shot action
@@ -20,26 +18,38 @@ namespace Weapons.Shooting
                 if (bullet == null)
                 {
 #if UNITY_EDITOR
-                    Debug.LogError("There is no bullet component in bullet prefab.", weapon.Ammo.Bullet.BulletObject);
+                    Debug.LogError("There is no bullet component in bullet prefab.", bulletObject);
 #endif
                     return;
                 }
 
-                bullet.Bake(weapon.Ammo.Bullet);
+                bullet.Bake(weapon.Ammo.BulletData);
                 if (weapon.Accuracy)
-                    bullet.BakeFlowDirection(weapon.Accuracy.GetDirectionVector());
+                    bullet.BakeFlowDirection(weapon.Accuracy.GetDirection());
                 else if (weapon.BulletFlow)
                     bullet.BakeFlowDirection(weapon.BulletFlow);
 #if UNITY_EDITOR
                 else
-                    Debug.Log("Weapon don't have Accuracy or BulletFlow component attached.", weapon);
+                    Debug.Log("Weapon don't have Accuracy or BulletFlow component attached.", weapon.GameObj);
 #endif
 
                 bullet.Launch();
             }
         }
+        
+        public override void Perform(IWeapon weapon)
+        {
+            weapon.AmmoHandler.SubtractAmmo(weapon.Ammo, 1);
 
-        public override bool IsExecutable(Weapon weapon)
+            switch (weapon)
+            {
+                case IGameObjectWeapon gameObjectWeapon: 
+                    EmmitBullet(gameObjectWeapon);
+                    break;
+            }
+        }
+
+        public override bool IsExecutable(IWeapon weapon)
         {
             return weapon.Ammo.IsMagazineAmountUnlimited || weapon.Ammo.MagazineAmount >= 1;
         }

@@ -4,9 +4,9 @@
 namespace Weapons.Ammo
 {
     [CreateAssetMenu(menuName = "Weapon/Ammo/Handler")]
-    public class AmmoHandler : global::Weapon.Utility.ComputingHandler
+    public class AmmoHandler : global::Weapon.Utility.ComputingHandler, IAmmoHandler
     {
-        public void Reload(AmmoController data)
+        public void Reload(IAmmoController data)
         {
             data.MagazineCount = data.Amount / data.MagazineCapacity;
             data.MagazineAmount = data.Amount % data.MagazineCapacity;
@@ -16,12 +16,12 @@ namespace Weapons.Ammo
             data.MagazineCount--;
         }
 
-        public bool IsReloadPossible(AmmoController data)
+        public bool IsReloadPossible(IAmmoController data)
         {
             return data.Amount > 0 && data.MagazineAmount < data.MagazineCapacity;
         }
 
-        public int AddAmmo(AmmoController data, int count)
+        public int AddAmmo(IAmmoController data, int count)
         {
             if (count > data.Capacity - data.Amount)
                 count = data.Capacity - data.Amount;
@@ -30,7 +30,7 @@ namespace Weapons.Ammo
             return count;
         }
 
-        public void SubtractAmmo(AmmoController data, int shootCount)
+        public void SubtractAmmo(IAmmoController data, int shootCount)
         {
             if (data.MagazineAmount == 0 || (data.IsAmountUnlimited && data.IsMagazineAmountUnlimited)) return;
 
@@ -39,7 +39,7 @@ namespace Weapons.Ammo
                 data.Amount -= shootCount;
         }
 
-        public bool HasRequiredAmount(AmmoController data, int ammoAmount)
+        public bool HasRequiredAmount(IAmmoController data, int ammoAmount)
         {
             return data.IsMagazineAmountUnlimited || !(ammoAmount > data.MagazineAmount);
         }

@@ -21,9 +21,9 @@ namespace Weapon.Base
             Id = default;
         }
 
-        public void CalculateRemaining()
+        public void CalculateRemaining(float progress)
         {
-            TimeRemaining = Math.Max(Period - (Time.time - TimeBegin), 0.0f);
+            TimeRemaining = Math.Max(Period - progress, 0.0f);
         }
 
         public void Remember(int id, float period)

@@ -3,8 +3,8 @@
 
 namespace Weapons.Bullets
 {
-    [CreateAssetMenu(menuName = "Bullet/Create")]
-    public class BulletDataSO : ScriptableObject
+    [CreateAssetMenu(menuName = "Weapon/Bullets/Create")]
+    public class BulletDataSO : ScriptableObject, IBulletData
     {
         [field: SerializeField] public GameObject BulletObject { get; private set; }
         [field: SerializeField] public bool LookRotation { get; private set; } = true;

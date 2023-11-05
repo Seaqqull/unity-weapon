@@ -132,7 +132,7 @@ namespace Weapons.Bullets
             OnBulletStart();
         }
 
-        public void Bake(BulletDataSO data)
+        public void Bake(IBulletData data)
         {
             _lookRotation = data.LookRotation;
             _damage = data.Damage;
@@ -148,10 +148,10 @@ namespace Weapons.Bullets
             BakeFlowDirection(bulletFlow, bulletFlow.rotation);
         }
 
-        public void BakeFlowDirection(Line bulletFlow)
-        {
-            Transform.position = bulletFlow.From;
-            Transform.rotation = Quaternion.LookRotation(bulletFlow.Direction);
+        public void BakeFlowDirection(Line[] bulletFlow)
+        {// TODO: Handle array
+            Transform.position = bulletFlow[0].From;
+            Transform.rotation = Quaternion.LookRotation(bulletFlow[0].Direction);
         }
         
         public void BakeFlowDirection(Transform bulletFlow, Quaternion rotation)

@@ -66,7 +66,8 @@ namespace Weapon.Storage
             var dummyOut = _objectsToPool.Dequeue();
 
             var dummyTransform = dummyOut.transform;
-            dummyTransform.parent = _spawned.transform;
+            // dummyTransform.parent = _spawned.transform;
+            dummyTransform.parent = null;
 
             dummyOut.SetActive(true);
 
