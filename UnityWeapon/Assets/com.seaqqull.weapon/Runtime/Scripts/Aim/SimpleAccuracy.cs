@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using Weapons.Aiming.Shapes;
 using Utilities.Methods;
 using UnityEngine;
-using Weapons.Aiming.Shapes;
 
 
 namespace Weapons.Aiming
@@ -19,7 +19,6 @@ namespace Weapons.Aiming
         [SerializeField] private bool _showRelativeSegments;
 
         private readonly List<Vector3> _sampleLines = new();
-        private Vector3 _startLine, _beginLine, _endLine;
 
         public Region Begin => _middleSegment.Property;
         public Region End => _endSegment.Property;
@@ -70,17 +69,15 @@ namespace Weapons.Aiming
                 _ => null
             };
         }
-        
+
         [ContextMenu("New random direction")]
         protected override void MakeRandomDirection()
         {
-            var lines = GetDirection();
+            var lines = CreateDirection();
             ClearRandomDirection();
             
             foreach (var line in lines)
-            {
                 _sampleLines.Add(line.From);
-            }
             _sampleLines.Add(lines[^1].From + lines[^1].Direction * lines[^1].Length);
         }
 
@@ -88,8 +85,6 @@ namespace Weapons.Aiming
         protected override void ClearRandomDirection()
         {
             _sampleLines.Clear();
-            _beginLine = Vector3.zero;
-            _endLine = Vector3.zero;
         }
 
         private static float MapAccuracy(float from, float ratio) =>
@@ -100,13 +95,14 @@ namespace Weapons.Aiming
                     : ratio.Map(0.0f, -0.5f, from, from * 0.5f);
 
 
-        public override Line[] GetDirection()
+        public override Line[] CreateDirection()
         {
-            var lines = new Line[2];
             var rotation = _flow.rotation;
             var position = _flow.position;
             var forward = _flow.forward;
+
             var fromPosition = _beginSegment == null ? position : _beginSegment.CalculateVector(position, rotation);
+            var lines = new Line[2];
 
             for(var i = 1; i < 3; i++)
             {

@@ -1,21 +1,20 @@
 using Weapons.Bullets;
 
+
 namespace Weapons.Ammo
 {
     public interface IAmmoController
     {
         IBulletData BulletData { get; }
-
-        int Capacity { get; }
-        int Amount { get; set; }
-        int MagazineCapacity { get; }
         
-        bool IsAmountUnlimited { get; }
         bool IsMagazineAmountUnlimited { get; }
-        
+        bool IsAmountUnlimited { get; }
+        int MagazineCapacity { get; }
         float ReloadTime { get; }
+        int Capacity { get; }
 
-        int MagazineCount { get; set; }
         int MagazineAmount { get; set; }
+        int MagazineCount { get; set; }
+        int Amount { get; set; }
     }
 }

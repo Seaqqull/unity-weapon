@@ -15,7 +15,7 @@ namespace Weapons.Bullets
 
         protected override void OnTriggerEnter(Collider other)
         {
-            global::Weapon.Utility.IEntity affectedEntity = CheckBulletCollision(other);
+            var affectedEntity = CheckBulletCollision(other);
             if ((affectedEntity == null) || IsEntityAffected(affectedEntity))
                 return;
 
@@ -38,10 +38,8 @@ namespace Weapons.Bullets
         private bool IsEntityAffected(global::Weapon.Utility.IEntity hittedEntity)
         {
             for (var i = 0; i < _affectedEntities.Count; i++)
-            {
                 if (_affectedEntities[i].Id == hittedEntity.Id)
                     return true;
-            }
             return false;
         }
 

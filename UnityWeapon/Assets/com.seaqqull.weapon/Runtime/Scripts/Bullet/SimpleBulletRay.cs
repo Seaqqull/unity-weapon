@@ -12,6 +12,7 @@ namespace Weapons.Bullets
 
         private Vector3 _previousPosition;
 
+
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
@@ -22,9 +23,9 @@ namespace Weapons.Bullets
                 _rigidbody.AddForce(Transform.forward * (_speed * Time.fixedDeltaTime));
             }
 
-            CheckCollision(_previousPosition);
-
-            _previousPosition = Transform.position;
+            var currentPosition = Transform.position;
+            CheckCollision(_previousPosition, currentPosition);
+            _previousPosition = currentPosition;
         }
 
         protected override void OnTriggerEnter(Collider other) 
@@ -46,15 +47,13 @@ namespace Weapons.Bullets
             base.OnBulletStart();
         }
 
-        private void CheckCollision(Vector3 position)
+        private void CheckCollision(Vector3 previousPosition, Vector3 currentPosition)
         {
-            RaycastHit hit;
+            var dist = Vector3.Distance(currentPosition, previousPosition);
+            var direction = currentPosition - previousPosition;
+            var ray = new Ray(previousPosition, direction);            
 
-            var dist = Vector3.Distance(Transform.position, position);
-            var direction = Transform.position - position;
-            var ray = new Ray(position, direction);            
-
-            if (!Physics.Raycast(ray, out hit, dist, _targetMask))
+            if (!Physics.Raycast(ray, out var hit, dist, _targetMask))
                 return;
 
             var rot = Quaternion.FromToRotation(Vector3.forward, hit.normal);

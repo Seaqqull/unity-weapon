@@ -7,8 +7,8 @@ namespace Weapons.Bullets.Data
     {
         void Launch();
         void Bake(IBulletData data);
-        public void BakeFlowDirection(Transform bulletFlow);
-        public void BakeFlowDirection(Line[] bulletFlow);
-        public void BakeFlowDirection(Transform bulletFlow, Quaternion rotation);
+        void BakeFlowDirection(Transform bulletFlow);
+        void BakeFlowDirection(Line[] bulletFlow);
+        void BakeFlowDirection(Transform bulletFlow, Quaternion rotation);
     }
 }

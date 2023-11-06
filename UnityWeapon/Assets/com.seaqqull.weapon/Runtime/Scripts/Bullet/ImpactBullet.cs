@@ -16,6 +16,5 @@ namespace Weapons.Bullets
 
             affectedEntity.ApplyForce(Transform.forward * _impactPower);
         }
-
     }
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Weapon.Base;
 using System;
+using Weapon.Computing;
 
 
 namespace Weapons.Data
@@ -16,6 +17,6 @@ namespace Weapons.Data
         public override float Progress => Mathf.InverseLerp(Min, Max, Value); 
     }
 
-    [Serializable] public class AmmoComputeData : global::Weapon.Utility.ComputingData<Ammo.AmmoHandler, Ammo.AmmoController> { }
-    [Serializable] public class ShootingComputeData : global::Weapon.Utility.ComputingData<Shooting.ShootingHandler, Shooting.ShootingMode> { }
+    [Serializable] public class AmmoComputeData : ComputingData<Ammo.AmmoHandler, Ammo.AmmoController> { }
+    [Serializable] public class ShootingComputeData : ComputingData<Shooting.ShootingHandler, Shooting.ShootingMode> { }
 }

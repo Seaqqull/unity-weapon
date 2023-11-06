@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Weapons.Aiming.Shapes;
 using UnityEngine;
 
+
 namespace Weapons.Aiming
 {
     public class SegmentAccuracy : Accuracy
@@ -54,7 +55,7 @@ namespace Weapons.Aiming
         [ContextMenu("Create sample direction")]
         protected override void MakeRandomDirection()
         {
-            var lines = GetDirection();
+            var lines = CreateDirection();
             
             ClearRandomDirection();
             foreach (var line in lines)
@@ -71,7 +72,7 @@ namespace Weapons.Aiming
         }
 
 
-        public override Line[] GetDirection()
+        public override Line[] CreateDirection()
         {
             var lines = new Line[_segments.Length];
             var rotation = _flow.rotation;

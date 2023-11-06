@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using UnityEngine;
 using Weapon.Storage.Data;
+using UnityEngine;
+
 
 namespace Weapon.Storage
 {
     public class Pooler : IPool
     {
         private GameObject _spawnObject;
-        protected GameObject _spawned;
-        protected GameObject _queue;
+        private GameObject _queue;
         private GameObject _owner;
 
         protected Queue<GameObject> _objectsToPool;
@@ -23,10 +23,8 @@ namespace Weapon.Storage
 
             Properties = properties;
             
-            _spawned = new GameObject($"Spawned - {properties.Id}");
             _queue = new GameObject($"Queue - {properties.Id}");
 
-            _spawned.transform.parent = _owner.transform;
             _queue.transform.parent = _owner.transform;
 
             _objectsToPool = new Queue<GameObject>();
@@ -66,7 +64,6 @@ namespace Weapon.Storage
             var dummyOut = _objectsToPool.Dequeue();
 
             var dummyTransform = dummyOut.transform;
-            // dummyTransform.parent = _spawned.transform;
             dummyTransform.parent = null;
 
             dummyOut.SetActive(true);

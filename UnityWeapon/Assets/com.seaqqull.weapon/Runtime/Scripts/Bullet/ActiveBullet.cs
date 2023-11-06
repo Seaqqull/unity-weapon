@@ -1,14 +1,13 @@
-﻿using Weapons.Aiming;
-using UnityEngine;
-using System;
-using Weapon.Base;
+﻿using Weapons.Bullets.Data;
 using Weapon.Storage.Data;
-using Weapons.Bullets.Data;
+using Weapons.Aiming;
+using UnityEngine;
+using Weapon.Base;
+using System;
 
 
 namespace Weapons.Bullets
 {
-    [Serializable]
     [RequireComponent(typeof(Rigidbody))]
     public abstract class ActiveBullet : BaseMonoBehaviour, IBullet, IPoolable
     {
@@ -115,11 +114,12 @@ namespace Weapons.Bullets
             if (spawnInHit)
                 spawnedObj.transform.SetParent(hit.collider.transform);
         }
-        
+
+
         public void PoolIn()
         {
             OnDestroy?.Invoke(this);
-            
+
             OnBulletDestroy();
         }
 

@@ -1,9 +1,9 @@
-﻿
+﻿using Weapon.Computing;
 
 
 namespace Weapons.Shooting
 {
-    public abstract class ShootingMode : global::Weapon.Utility.ComputingHandler, IShootingMode
+    public abstract class ShootingMode : ComputingHandler, IShootingMode
     {
         public int BulletsToPerformShot => 1;
         public float TimeBetweenShot => 0.1f;

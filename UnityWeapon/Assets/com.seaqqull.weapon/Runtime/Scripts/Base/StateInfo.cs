@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 
+
 namespace Weapon.Base
 {
     public class StateInfo
@@ -20,12 +21,7 @@ namespace Weapon.Base
             TimeBegin = default;
             Id = default;
         }
-
-        public void CalculateRemaining(float progress)
-        {
-            TimeRemaining = Math.Max(Period - progress, 0.0f);
-        }
-
+        
         public void Remember(int id, float period)
         {
             IsEmpty = false;
@@ -34,6 +30,11 @@ namespace Weapon.Base
             TimeBegin = Time.time;
             Period = period;
             Id = id;
+        }
+
+        public void CalculateRemaining(float progress)
+        {
+            TimeRemaining = Math.Max(Period - progress, 0.0f);
         }
     }
 }

@@ -1,5 +1,5 @@
-using UnityEngine;
 using Utilities.Methods;
+using UnityEngine;
 
 
 namespace Weapons.Aiming.Shapes

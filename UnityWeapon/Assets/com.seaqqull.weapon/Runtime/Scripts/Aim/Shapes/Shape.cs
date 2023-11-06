@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 namespace Weapons.Aiming.Shapes
 {
     public abstract class Shape : ScriptableObject

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 namespace Weapons.Bullets
 {
     public interface IBulletData

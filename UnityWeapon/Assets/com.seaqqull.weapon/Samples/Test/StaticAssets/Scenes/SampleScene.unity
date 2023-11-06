@@ -665,7 +665,6 @@ GameObject:
   m_Component:
   - component: {fileID: 495496477}
   - component: {fileID: 495496479}
-  - component: {fileID: 495496480}
   - component: {fileID: 495496478}
   m_Layer: 0
   m_Name: Weapon
@@ -778,8 +777,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _flow: {fileID: 2008259506}
-  _shapeColor: {r: 0, g: 1, b: 0, a: 0}
-  _precisionColor: {r: 1, g: 1, b: 0, a: 0}
+  _shapeColor: {r: 0, g: 1, b: 0, a: 1}
+  _precisionColor: {r: 1, g: 1, b: 0, a: 1}
   _beginSegment: {fileID: 11400000, guid: c45119e7941e944429e2bd8925948705, type: 2}
   _segments:
   - {fileID: 11400000, guid: e02346af7b2064c51a943049237df051, type: 2}
@@ -787,27 +786,6 @@ MonoBehaviour:
   _randomDirectionTransparency: 0.224
   _segmentsInfluenceNextPosition: 0
   _showRelativeSegments: 1
---- !u!114 &495496480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 495496475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57fce52dcb8b4cbb81b0394393554167, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _flow: {fileID: 2008259506}
-  _shapeColor: {r: 0.8113208, g: 0.5285923, b: 0.49368104, a: 1}
-  _precisionColor: {r: 0.1980242, g: 0.4716981, b: 0.31584913, a: 1}
-  _beginSegment: {fileID: 11400000, guid: c45119e7941e944429e2bd8925948705, type: 2}
-  _middleSegment: {fileID: 11400000, guid: e02346af7b2064c51a943049237df051, type: 2}
-  _endSegment: {fileID: 11400000, guid: a67329a129882457699ed68ff743d253, type: 2}
-  _randomDirectionTransparency: 0.307
-  _segmentsInfluenceNextPosition: 0
-  _showRelativeSegments: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

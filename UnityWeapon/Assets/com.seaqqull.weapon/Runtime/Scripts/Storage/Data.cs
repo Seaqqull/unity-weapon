@@ -36,6 +36,6 @@ namespace Weapon.Storage.Data
     public interface IStorage
     {
         GameObject Pool(int id);
-         void Populate(GameObject spawnObject, StorageData properties); 
+        void Populate(GameObject spawnObject, StorageData properties); 
     }
 }

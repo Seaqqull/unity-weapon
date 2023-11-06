@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using Weapon.Computing;
+using UnityEngine;
 
 
 namespace Weapons.Ammo
 {
     [CreateAssetMenu(menuName = "Weapon/Ammo/Handler")]
-    public class AmmoHandler : global::Weapon.Utility.ComputingHandler, IAmmoHandler
+    public class AmmoHandler : ComputingHandler, IAmmoHandler
     {
         public void Reload(IAmmoController data)
         {

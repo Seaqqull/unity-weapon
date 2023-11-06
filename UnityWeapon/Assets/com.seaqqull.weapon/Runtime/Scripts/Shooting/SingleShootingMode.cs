@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using Weapons.Bullets.Data;
+﻿using Weapons.Bullets.Data;
+using UnityEngine;
 
 
 namespace Weapons.Shooting
@@ -25,7 +25,7 @@ namespace Weapons.Shooting
 
                 bullet.Bake(weapon.Ammo.BulletData);
                 if (weapon.Accuracy)
-                    bullet.BakeFlowDirection(weapon.Accuracy.GetDirection());
+                    bullet.BakeFlowDirection(weapon.Accuracy.CreateDirection());
                 else if (weapon.BulletFlow)
                     bullet.BakeFlowDirection(weapon.BulletFlow);
 #if UNITY_EDITOR

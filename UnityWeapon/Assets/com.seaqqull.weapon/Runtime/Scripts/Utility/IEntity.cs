@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 namespace Weapon.Utility
 {
     public interface IEntity

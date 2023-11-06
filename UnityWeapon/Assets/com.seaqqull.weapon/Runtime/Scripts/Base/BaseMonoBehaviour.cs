@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 
+
 namespace Weapon.Base
 {
     public class BaseMonoBehaviour : MonoBehaviour
     {
-        public GameObject GameObj { get; private set; }
         public Transform Transform { get; private set; }
+        public GameObject GameObj { get; private set; }
         public Vector3 Position => Transform.position;
         public Vector3 Forward => Transform.forward;
 

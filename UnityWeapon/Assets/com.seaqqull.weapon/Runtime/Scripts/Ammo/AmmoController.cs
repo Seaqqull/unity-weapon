@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using Weapons.Bullets;
+﻿using Weapons.Bullets;
+using UnityEngine;
 
 
 namespace Weapons.Ammo
@@ -12,7 +12,7 @@ namespace Weapons.Ammo
         [SerializeField] [HideInInspector] private string name = "Magazine";
 #pragma warning restore CS0414
 #endif
-        [field: SerializeField] public Bullets.BulletDataSO Bullet { get; private set; }
+        [field: SerializeField] public BulletDataSO Bullet { get; private set; }
 
         [field: SerializeField] public int Capacity { get; private set; }
         [field: SerializeField] public int Amount { get; set; }

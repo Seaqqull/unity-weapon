@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 2056
     height: 1210
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Game
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -215,8 +215,8 @@ MonoBehaviour:
     y: 0
     width: 1242
     height: 808
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 202, y: 221}
+  m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 12}
   m_Panes:
   - {fileID: 12}
@@ -622,9 +622,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 2.314524, y: -0.7570722, z: -6.092669}
+    m_Target: {x: 0.7189316, y: -0.17858279, z: -5.727545}
     speed: 2
-    m_Value: {x: 2.314524, y: -0.7570722, z: -6.092669}
+    m_Value: {x: 0.7189316, y: -0.17858279, z: -5.727545}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -670,9 +670,9 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.37579364, y: -0.45818967, z: 0.22178127, w: -0.77449673}
+    m_Target: {x: -0.26654765, y: 0.1437601, z: -0.040776227, w: -0.9522715}
     speed: 2
-    m_Value: {x: -0.3757578, y: -0.45814598, z: 0.22176012, w: -0.7744229}
+    m_Value: {x: -0.26652122, y: 0.14374584, z: -0.04077218, w: -0.9521771}
   m_Size:
     m_Target: 1.2719483
     speed: 2
@@ -739,9 +739,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: ac4c0000
-      m_LastClickedID: 19628
-      m_ExpandedIDs: f8faffffac4c0000
+      m_SelectedIDs: a24c0000
+      m_LastClickedID: 19618
+      m_ExpandedIDs: 28fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -927,7 +927,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: ba4e0000
     m_LastClickedID: 20154
-    m_ExpandedIDs: 000000006a4d0000b84e0000bc4e0000be4e0000
+    m_ExpandedIDs: 000000008c4d0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -955,7 +955,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000006a4d0000
+    m_ExpandedIDs: 000000008c4d0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1083,7 +1083,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 19628
+  m_LastSelectedObjectID: 19618
 --- !u!114 &18
 MonoBehaviour:
   m_ObjectHideFlags: 52
