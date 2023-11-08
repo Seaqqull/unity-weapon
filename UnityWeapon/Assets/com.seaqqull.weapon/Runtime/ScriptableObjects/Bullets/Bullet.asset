@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <BulletObject>k__BackingField: {fileID: 1201910439119556290, guid: 561b970f316654267934b6cafe6050bb,
     type: 3}
-  <LookRotation>k__BackingField: 0
+  <LookRotation>k__BackingField: 1
+  <FollowType>k__BackingField: 5
   <Damage>k__BackingField: 0
-  <Speed>k__BackingField: 100
+  <Speed>k__BackingField: 1
   <Range>k__BackingField: 10
   <TargetMask>k__BackingField:
     serializedVersion: 2

@@ -56,6 +56,19 @@ namespace Weapons.Aiming.Shapes
             return new Vector3(Random.value.Map(0, 1, -halfWidth, halfWidth), Random.value.Map(0, 1, -halfHeight, halfHeight), 0);
         }
 
+        public override Vector3 Clamp(Vector3 point)
+        {
+            var sizeScale = 1 - _property.Precision;
+            var halfHeight = _property.Height / 2 * sizeScale;
+            var halfWidth = _property.Width / 2 * sizeScale;
+            
+            return new Vector3(
+                Mathf.Clamp(point.x, -halfWidth, halfWidth),
+                Mathf.Clamp(point.y, -halfHeight, halfHeight),
+                point.z
+            );
+        }
+
         public override Vector3 CalculateVector(Vector3 position, Quaternion rotation)
         {
             return position + (rotation * CalculateVector());

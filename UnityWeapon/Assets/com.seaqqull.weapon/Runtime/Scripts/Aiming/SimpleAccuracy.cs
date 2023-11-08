@@ -9,9 +9,9 @@ namespace Weapons.Aiming
     public class SimpleAccuracy : Accuracy
     {
         [Space]
-        [SerializeField] private Shape _beginSegment;
-        [SerializeField] private Shape _middleSegment;
-        [SerializeField] private Shape _endSegment;
+        [SerializeField] private SpreadShape _beginSegment;
+        [SerializeField] private SpreadShape _middleSegment;
+        [SerializeField] private SpreadShape _endSegment;
         [Header("Visualization")] 
         [SerializeField] [Range(0, 1)] private float _randomDirectionTransparency;
         [Header("Preferences")]
@@ -59,7 +59,7 @@ namespace Weapons.Aiming
                 ShapeFromIndex(i).DrawGizmos(_sampleLines[i], forward, rotation, sampleShapeColor, precisionShapeColor);
         }
        
-        private Shape ShapeFromIndex(int index)
+        private SpreadShape ShapeFromIndex(int index)
         {
             return index switch
             {
@@ -78,7 +78,7 @@ namespace Weapons.Aiming
             
             foreach (var line in lines)
                 _sampleLines.Add(line.From);
-            _sampleLines.Add(lines[^1].From + lines[^1].Direction * lines[^1].Length);
+            _sampleLines.Add(lines[^1].From + lines[^1].Direction * lines[^1].SquaredLength);
         }
 
         [ContextMenu("Clear random direction")]
@@ -114,7 +114,7 @@ namespace Weapons.Aiming
 
                 var toPosition = segment.CalculateVector(position, rotation);
                 var direction = (toPosition - fromPosition);
-                lines[i - 1] = new Line(fromPosition, direction.normalized, direction.magnitude);
+                lines[i - 1] = new Line(fromPosition, direction.normalized, direction.sqrMagnitude);
                 fromPosition = toPosition;
             }
             return lines;

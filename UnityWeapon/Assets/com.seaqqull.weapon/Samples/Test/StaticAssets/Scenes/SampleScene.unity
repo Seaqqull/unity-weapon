@@ -666,6 +666,7 @@ GameObject:
   - component: {fileID: 495496477}
   - component: {fileID: 495496479}
   - component: {fileID: 495496478}
+  - component: {fileID: 495496480}
   m_Layer: 0
   m_Name: Weapon
   m_TagString: Untagged
@@ -777,8 +778,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _flow: {fileID: 2008259506}
-  _shapeColor: {r: 0, g: 1, b: 0, a: 1}
-  _precisionColor: {r: 1, g: 1, b: 0, a: 1}
+  _shapeColor: {r: 0, g: 1, b: 0, a: 0}
+  _precisionColor: {r: 1, g: 1, b: 0, a: 0}
   _beginSegment: {fileID: 11400000, guid: c45119e7941e944429e2bd8925948705, type: 2}
   _segments:
   - {fileID: 11400000, guid: e02346af7b2064c51a943049237df051, type: 2}
@@ -786,6 +787,55 @@ MonoBehaviour:
   _randomDirectionTransparency: 0.224
   _segmentsInfluenceNextPosition: 0
   _showRelativeSegments: 1
+--- !u!114 &495496480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 495496475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57fce52dcb8b4cbb81b0394393554167, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _flow: {fileID: 2008259506}
+  _shapeColor: {r: 0, g: 1, b: 0, a: 1}
+  _precisionColor: {r: 1, g: 1, b: 0, a: 1}
+  _beginSegment:
+    Shape: {fileID: 11400000, guid: c45119e7941e944429e2bd8925948705, type: 2}
+    VisualizationSize: 0
+    SpreadType: 0
+    RandomOrder: 0
+    AlignWithAccuracy: 0
+    PlaintSequence: []
+    RandomSequence: []
+  _middleSegment:
+    Shape: {fileID: 11400000, guid: e02346af7b2064c51a943049237df051, type: 2}
+    VisualizationSize: 0.03
+    SpreadType: 1
+    RandomOrder: 1
+    AlignWithAccuracy: 0
+    PlaintSequence:
+    - {x: -0.18, y: 0}
+    - {x: 0, y: 0.18}
+    - {x: 0, y: -0.18}
+    RandomSequence:
+    - Shift: {x: 0, y: 0, z: 0}
+      Area: {x: -0.5, y: 0.5, z: -0.5, w: 0.5}
+    - Shift: {x: 0, y: 0, z: 0}
+      Area: {x: -0.3, y: 0.3, z: -0.3, w: 0.3}
+  _endSegment:
+    Shape: {fileID: 11400000, guid: a67329a129882457699ed68ff743d253, type: 2}
+    VisualizationSize: 0
+    SpreadType: 0
+    RandomOrder: 0
+    AlignWithAccuracy: 0
+    PlaintSequence: []
+    RandomSequence: []
+  _randomDirectionTransparency: 0
+  _segmentsInfluenceNextPosition: 0
+  _showRelativeSegments: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

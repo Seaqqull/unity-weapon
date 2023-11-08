@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Weapons.Aiming
 {
-    public class SegmentAccuracy : Accuracy
+    public class ComplexAccuracy : Accuracy
     {
         [SerializeField] private Shape _beginSegment;
         [SerializeField] private Shape[] _segments;
@@ -59,10 +59,8 @@ namespace Weapons.Aiming
             
             ClearRandomDirection();
             foreach (var line in lines)
-            {
                 _sampleLines.Add(line.From);
-            }
-            _sampleLines.Add(lines[^1].From + lines[^1].Direction * lines[^1].Length);
+            _sampleLines.Add(lines[^1].From + lines[^1].Direction * lines[^1].SquaredLength);
         }
 
         [ContextMenu("Clear sample direction")]
@@ -89,7 +87,7 @@ namespace Weapons.Aiming
 
                 var toPosition = _segments[i].CalculateVector(position, rotation);
                 var direction = (toPosition - fromPosition);
-                lines[i] = new Line(fromPosition, direction.normalized, direction.magnitude);
+                lines[i] = new Line(fromPosition, direction.normalized, direction.sqrMagnitude);
                 fromPosition = toPosition;
             }
             return lines;

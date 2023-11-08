@@ -18,7 +18,7 @@ namespace Weapons.Aiming
 
         protected abstract void MakeRandomDirection();
         protected abstract void ClearRandomDirection();
-        
+
 
         public abstract Line[] CreateDirection();
     }

@@ -45,7 +45,11 @@ namespace Weapons
         public WeaponState State
         {
             get => _state;
-            private set => _state = value;
+            private set
+            {
+                _state = value;
+                OnStateChanged?.Invoke(State);
+            }
         }
 
         public WeaponType Type => _type;

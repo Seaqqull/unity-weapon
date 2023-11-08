@@ -1,4 +1,4 @@
-﻿using Weapons.Bullets.Data;
+﻿using Weapons.Bullets;
 using UnityEngine;
 
 

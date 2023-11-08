@@ -64,6 +64,11 @@ namespace Weapons.Aiming.Shapes
             return new Vector3(rndPos.x, rndPos.y, 0);
         }
 
+        public override Vector3 Clamp(Vector3 point)
+        {
+            return Vector3.ClampMagnitude(point, _property.Radius * (1 - _property.Precision));
+        }
+
         public override Vector3 CalculateVector(Vector3 position, Quaternion rotation)
         {
             return position + (rotation * CalculateVector());

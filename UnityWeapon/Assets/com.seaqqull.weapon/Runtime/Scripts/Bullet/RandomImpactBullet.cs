@@ -12,7 +12,7 @@ namespace Weapons.Bullets
 
         protected override void OnTargetHit(global::Weapon.Utility.IEntity affectedEntity)
         {
-            affectedEntity.ModifyHealth(_damage);
+            affectedEntity.ModifyHealth(Damage);
 
             if (Random.Range(0.0f, 1.0f) <= _impactChance)
                 affectedEntity.ApplyForce(Transform.forward * ImpactPower);

@@ -283,6 +283,7 @@ namespace Weapons
             return true;
         }
 
+        [ContextMenu("Clear sample direction")]
         public void MakeShot()
         {
             Shoot();

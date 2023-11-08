@@ -19,8 +19,8 @@ namespace Weapons.Bullets
 
             if (Mathf.Abs(ProjectileSpeedMultiplier) > float.Epsilon)
             {
-                _speed *= ProjectileSpeedMultiplier;
-                _rigidbody.AddForce(Transform.forward * (_speed * Time.fixedDeltaTime));
+                Speed *= ProjectileSpeedMultiplier;
+                _rigidbody.AddForce(Transform.forward * (Speed * Time.fixedDeltaTime));
             }
 
             var currentPosition = Transform.position;
@@ -53,7 +53,7 @@ namespace Weapons.Bullets
             var direction = currentPosition - previousPosition;
             var ray = new Ray(previousPosition, direction);            
 
-            if (!Physics.Raycast(ray, out var hit, dist, _targetMask))
+            if (!Physics.Raycast(ray, out var hit, dist, TargetMask))
                 return;
 
             var rot = Quaternion.FromToRotation(Vector3.forward, hit.normal);

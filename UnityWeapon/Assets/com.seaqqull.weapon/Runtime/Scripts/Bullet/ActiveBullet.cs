@@ -1,4 +1,4 @@
-﻿using Weapons.Bullets.Data;
+﻿using Weapons.Aiming.Following;
 using Weapon.Storage.Data;
 using Weapons.Aiming;
 using UnityEngine;
@@ -9,24 +9,27 @@ using System;
 namespace Weapons.Bullets
 {
     [RequireComponent(typeof(Rigidbody))]
-    public abstract class ActiveBullet : BaseMonoBehaviour, IBullet, IPoolable
+    public abstract class ActiveBullet : BaseMonoBehaviour, IBullet, IBulletData, IPoolable
     {
-        protected LayerMask _targetMask;
         protected Rigidbody _rigidbody;
-
         protected Vector3 _startPosition;
         protected float _squaredRange;
-        protected bool _lookRotation;
         protected bool _isLaunched;
-        protected float _speed;
-        protected float _range;
-        protected int _damage;
+
+        protected IFollower _flowFollower;
 
         public event Action<ActiveBullet> OnDestroy;
         public event Action<ActiveBullet> OnLaunch;
         public event Action<ActiveBullet> OnHit;
 
-        public bool DistancePassed => _range > 0.0f && (Position - _startPosition).sqrMagnitude > _squaredRange;
+        public FollowType FollowType { get; set; }
+        public LayerMask TargetMask { get; set; }
+        public bool LookRotation { get; set; }
+        public float Speed { get; set; }
+        public float Range { get; set; }
+        public int Damage { get; set; }
+
+        public float PassedDistance => (Position - _startPosition).sqrMagnitude;
         public GameObject GameObject => GameObj;
         public IPool Pooler { get; set; }
 
@@ -40,12 +43,17 @@ namespace Weapons.Bullets
 
         protected virtual void FixedUpdate()
         {
-            if (!_isLaunched || _speed == 0.0f) return;
+            if (!_isLaunched || Speed == 0.0f) return;
 
-            if (DistancePassed)
+            var passedDistance = PassedDistance;
+            if (Range > 0.0f && passedDistance > _squaredRange)
                 OnBulletDestroy();
-            if (_lookRotation && _rigidbody.velocity != Vector3.zero)
-                Transform.rotation = Quaternion.LookRotation(_rigidbody.velocity);
+            if (_flowFollower.IsValid())
+                _flowFollower.UpdateDirection(passedDistance);
+
+            _rigidbody.MovePosition(Transform.position + (_flowFollower.FollowDirection * (Speed * Time.fixedDeltaTime)));
+            if (LookRotation && _rigidbody.velocity != Vector3.zero)
+                Transform.rotation = Quaternion.LookRotation(_flowFollower!.FollowDirection);
         }
 
 
@@ -62,7 +70,7 @@ namespace Weapons.Bullets
             _startPosition = Transform.position;
             
             _rigidbody.velocity = Vector3.zero;
-            _rigidbody.AddForce(Transform.forward * _speed);
+            _rigidbody.AddForce(Transform.forward * Speed);
 
             OnLaunch?.Invoke(this);
         }
@@ -75,12 +83,12 @@ namespace Weapons.Bullets
 
         protected virtual void OnTargetHit(global::Weapon.Utility.IEntity affectedEntity)
         {
-            affectedEntity.ModifyHealth(_damage);
+            affectedEntity.ModifyHealth(Damage);
         }
 
         protected virtual global::Weapon.Utility.IEntity CheckBulletCollision(Collider obstacle)
         {
-            return (_isLaunched && ((1 << obstacle.gameObject.layer) & _targetMask) != 0) 
+            return (_isLaunched && ((1 << obstacle.gameObject.layer) & TargetMask) != 0) 
                 ? obstacle.GetComponent<global::Weapon.Utility.IEntity>() 
                 : null;
         }
@@ -134,31 +142,39 @@ namespace Weapons.Bullets
 
         public void Bake(IBulletData data)
         {
-            _lookRotation = data.LookRotation;
-            _damage = data.Damage;
-            _speed = data.Speed;
-            _range = data.Range;
-            _squaredRange = _range * _range;
+            LookRotation = data.LookRotation;
+            FollowType = data.FollowType;
+            Damage = data.Damage;
+            Speed = data.Speed;
+            Range = data.Range;
+            _squaredRange = Range * Range;
 
-            _targetMask = data.TargetMask;
+            TargetMask = data.TargetMask;
         }
 
+        public void BakeFlowDirection(Line[] flow)
+        {
+            _flowFollower = FollowType switch
+            {
+                FollowType.Start => new StartFollower(flow),
+                FollowType.End => new EndFollower(flow),
+                FollowType.Average => new AverageFollower(flow),
+                FollowType.Follow => new FlowFollower(flow),
+                FollowType.SmoothedFollow => new SmoothedFlowFollower(flow),
+                _ => new StartFollower(flow)
+            };
+            Transform.position = flow[0].From;
+        }
+        
         public void BakeFlowDirection(Transform bulletFlow)
         {
             BakeFlowDirection(bulletFlow, bulletFlow.rotation);
         }
 
-        public void BakeFlowDirection(Line[] bulletFlow)
-        {// TODO: Handle array
-            Transform.position = bulletFlow[0].From;
-            Transform.rotation = Quaternion.LookRotation(bulletFlow[0].Direction);
-        }
-        
         public void BakeFlowDirection(Transform bulletFlow, Quaternion rotation)
         {
             Transform.position = bulletFlow.position;
             Transform.rotation = rotation;
         }
-
     }
 }
