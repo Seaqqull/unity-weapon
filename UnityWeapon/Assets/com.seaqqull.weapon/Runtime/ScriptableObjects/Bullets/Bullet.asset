@@ -17,7 +17,7 @@ MonoBehaviour:
   <LookRotation>k__BackingField: 1
   <FollowType>k__BackingField: 5
   <Damage>k__BackingField: 0
-  <Speed>k__BackingField: 1
+  <Speed>k__BackingField: 5
   <Range>k__BackingField: 10
   <TargetMask>k__BackingField:
     serializedVersion: 2

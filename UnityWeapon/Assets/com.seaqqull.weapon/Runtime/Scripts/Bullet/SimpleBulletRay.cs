@@ -8,7 +8,7 @@ namespace Weapons.Bullets
         /// <summary>
         /// Rewrite using some sort of modificators.
         /// </summary>
-        public float ProjectileSpeedMultiplier;
+        [field: SerializeField] public float ProjectileSpeedMultiplier { get; private set; }
 
         private Vector3 _previousPosition;
 
@@ -19,8 +19,8 @@ namespace Weapons.Bullets
 
             if (Mathf.Abs(ProjectileSpeedMultiplier) > float.Epsilon)
             {
-                Speed *= ProjectileSpeedMultiplier;
-                _rigidbody.AddForce(Transform.forward * (Speed * Time.fixedDeltaTime));
+                Speed += (ProjectileSpeedMultiplier / (1 / Time.fixedDeltaTime));
+                Speed = Mathf.Max(Speed, 0.0f);
             }
 
             var currentPosition = Transform.position;

@@ -11,9 +11,8 @@ namespace Weapons.Bullets
     [RequireComponent(typeof(Rigidbody))]
     public abstract class ActiveBullet : BaseMonoBehaviour, IBullet, IBulletData, IPoolable
     {
-        protected Rigidbody _rigidbody;
         protected Vector3 _startPosition;
-        protected float _squaredRange;
+        protected Rigidbody _rigidbody;
         protected bool _isLaunched;
 
         protected IFollower _flowFollower;
@@ -22,12 +21,13 @@ namespace Weapons.Bullets
         public event Action<ActiveBullet> OnLaunch;
         public event Action<ActiveBullet> OnHit;
 
-        public FollowType FollowType { get; set; }
-        public LayerMask TargetMask { get; set; }
-        public bool LookRotation { get; set; }
-        public float Speed { get; set; }
-        public float Range { get; set; }
-        public int Damage { get; set; }
+        public FollowType FollowType { get; protected set; }
+        public LayerMask TargetMask { get; protected set; }
+        public float SquaredRange { get; protected set; }
+        public bool LookRotation { get; protected set; }
+        public float Speed { get; protected set; }
+        public float Range { get; protected set; }
+        public int Damage { get; protected set; }
 
         public float PassedDistance => (Position - _startPosition).sqrMagnitude;
         public GameObject GameObject => GameObj;
@@ -46,13 +46,13 @@ namespace Weapons.Bullets
             if (!_isLaunched || Speed == 0.0f) return;
 
             var passedDistance = PassedDistance;
-            if (Range > 0.0f && passedDistance > _squaredRange)
+            if (Range > 0.0f && passedDistance > SquaredRange)
                 OnBulletDestroy();
             if (_flowFollower.IsValid())
                 _flowFollower.UpdateDirection(passedDistance);
 
             _rigidbody.MovePosition(Transform.position + (_flowFollower.FollowDirection * (Speed * Time.fixedDeltaTime)));
-            if (LookRotation && _rigidbody.velocity != Vector3.zero)
+            if (LookRotation)
                 Transform.rotation = Quaternion.LookRotation(_flowFollower!.FollowDirection);
         }
 
@@ -68,10 +68,6 @@ namespace Weapons.Bullets
         protected virtual void OnBulletStart()
         {
             _startPosition = Transform.position;
-            
-            _rigidbody.velocity = Vector3.zero;
-            _rigidbody.AddForce(Transform.forward * Speed);
-
             OnLaunch?.Invoke(this);
         }
 
@@ -147,7 +143,7 @@ namespace Weapons.Bullets
             Damage = data.Damage;
             Speed = data.Speed;
             Range = data.Range;
-            _squaredRange = Range * Range;
+            SquaredRange = Range * Range;
 
             TargetMask = data.TargetMask;
         }
