@@ -1,0 +1,16 @@
+{
+    "name": "Seaqqull.Weapon",
+    "rootNamespace": "Seaqqull.Weapon",
+    "references": [
+        "GUID:e0b03f987d1e748d198965c2972b9307"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _attribute:
     Name:
-      UseConstant: 0
-      ConstantValue: 
-      Variable: {fileID: 11400000, guid: f0016b1604da2bb4db592b554f842d1b, type: 2}
+      _useConstant: 0
+      _constantValue: 
+      _variable: {fileID: 11400000, guid: f0016b1604da2bb4db592b554f842d1b, type: 2}
     Type: 1
     Value: 100

@@ -21,13 +21,13 @@ namespace Weapons
         #region EditorVariables
         [SerializeField] private WeaponType _type;
         [SerializeField] private Aiming.Accuracy _accuracy;
-        [Header("Initialization")] 
+        [Header("Initialization")]
         [SerializeField] private bool _reloadOnStartup;
         [Space]
         [SerializeField] private int _poolAmount;
         [SerializeField] private int _expansionAmount;
         [SerializeField] private int _reductionAmount;
-        [Header("Events")] 
+        [Header("Events")]
         [SerializeField] private UnityEvent _onShot;
         [SerializeField] private UnityEvent _onReloaded;
         [SerializeField] private UnityEvent _onAmmoChanged;
@@ -105,22 +105,19 @@ namespace Weapons
         public WeaponType Type => _type;
 
         public bool IsActionExecutable => _actionCoroutine == null;
-        public bool IsReloadPossible => 
-            IsActionExecutable && 
-            AmmoHandler.IsReloadPossible(_ammo.Data[_activeAmmo]);
+        public bool IsReloadPossible =>
+            IsActionExecutable && AmmoHandler.IsReloadPossible(_ammo.Data[_activeAmmo]);
         public bool IsMagazineEmpty => (Ammo.MagazineAmount == 0);
         public bool IsShotPossible =>
-            IsActionExecutable &&
-            ShootingHandler.IsExecutable(this) &&
-            Mode.IsExecutable(this);
+            IsActionExecutable && ShootingHandler.IsExecutable(this) && Mode.IsExecutable(this);
         public UiUpdateRate UiUpdateRate
         {
             get => _uiUpdateRate;
             set
             {
                 _uiUpdateRate = value;
-                _uiUpdateTime = (_uiUpdateRate == UiUpdateRate.FPS_Umlimited) 
-                    ? null 
+                _uiUpdateTime = (_uiUpdateRate == UiUpdateRate.FPS_Umlimited)
+                    ? null
                     :  new WaitForSeconds(1.0f / (int) UiUpdateRate);
             }
         }
@@ -156,7 +153,7 @@ namespace Weapons
 
             UiUpdateRate = _uiUpdateRate;
         }
-        
+
         protected void OnEnable()
         {
             ResumeAction();
@@ -198,15 +195,15 @@ namespace Weapons
             _activeAmmo = modeIndex;
             return true;
         }
-        
+
         private bool ChangeShootingMode(int modeIndex)
         {
             if (!IsActionExecutable || modeIndex < 0 || modeIndex >= _shooting.Data.Count) return false;
-            
+
             _activeShooting = modeIndex;
             return true;
         }
-        
+
         private void UpdateUI(UIUpdateMode uiUpdateMode)
         {
             if (uiUpdateMode.HasFlag(UIUpdateMode.OverallAmount))
@@ -246,10 +243,10 @@ namespace Weapons
             _stateResultAction = null;
             _actionCoroutine = null;
         }
-        
+
         private bool ChangeShootingMode(ChangeDirection direction)
         {
-            if (!IsActionExecutable) return false; 
+            if (!IsActionExecutable) return false;
             if (_shooting.Data.Count <= 1) return true;
 
             _activeShooting = GetFromDirection(direction, _activeShooting, 1, 0, _shooting.Data.Count - 1);
@@ -294,16 +291,6 @@ namespace Weapons
             return _storage.Pool(_activeAmmo);
         }
 
-        // public void LockShoot(Action<bool> shotCallback)
-        // {
-        //     StartCO
-        // }
-        //
-        // public void UnlockShoot()
-        // {
-        //     
-        // }
-
         public bool Reload()
         {
             if (!IsReloadPossible) return false;
@@ -326,10 +313,10 @@ namespace Weapons
         public void BreakAction()
         {
             if (_actionCoroutine == null) return;
-            
+
             StopCoroutine(_actionCoroutine);
             _actionCoroutine = null;
-                
+
             _stateInfo.CalculateRemaining(_actionProgress.Progress);
         }
 
@@ -354,7 +341,7 @@ namespace Weapons
             _onAmmoChanged.Invoke();
             return true;
         }
-        
+
         public bool NextShootingMode()
         {
             if (!ChangeShootingMode(ChangeDirection.Forward)) return false;

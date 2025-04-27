@@ -1,0 +1,11 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:VisualElement style="flex-grow: 1; bottom: 0; position: absolute; right: 0; left: 0;">
+        <engine:ProgressBar title="Action progress" name="ActionProgress">
+            <Bindings>
+                <engine:DataBinding property="value" data-source-path="ActionProgress" binding-mode="ToTarget" />
+                <engine:DataBinding property="style.display" data-source-path="ActionProgressDisplay" binding-mode="ToTarget" />
+            </Bindings>
+        </engine:ProgressBar>
+        <engine:Button text="Shot" double-click-selects-word="false" triple-click-selects-line="false" enable-rich-text="false" name="ShootAction" />
+    </engine:VisualElement>
+</engine:UXML>

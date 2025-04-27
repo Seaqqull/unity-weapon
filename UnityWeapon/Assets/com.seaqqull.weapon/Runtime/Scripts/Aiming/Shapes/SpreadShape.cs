@@ -10,14 +10,14 @@ using System;
 namespace Weapons.Aiming.Shapes
 {
     public enum SpreadType { Random, PlaintSequence, RandomSequence}
-    
+
     [Serializable]
     public class SpreadShape : IShape
     {
         [SerializeField] private Shape Shape;
         [Space]
         [SerializeField] private float VisualizationSize = 0.1f;
-        [Space] 
+        [Space]
         [SerializeField] private SpreadType SpreadType;
         [SerializeField] private bool RandomOrder;
         [SerializeField] private bool AlignWithAccuracy;
@@ -32,10 +32,17 @@ namespace Weapons.Aiming.Shapes
         private int _dedicatedSequenceIndex;
 
         public Region Property => Shape.Property;
-        
-        
+
+
         public void DrawGizmos(Vector3 position, Vector3 forward, Quaternion rotation, Color shapeColor, Color precisionColor)
         {
+            if (Shape == null)
+            {
+                Debug.LogError($"{nameof(Shape)} is not attached to {nameof(Rigidbody)}.");
+                return;
+            }
+
+
             Shape.DrawGizmos(position, forward, rotation, shapeColor, precisionColor);
 
 #if UNITY_EDITOR
@@ -52,7 +59,7 @@ namespace Weapons.Aiming.Shapes
                 Handles.Label(spreadPosition, $"{i}");
 #endif
             }
-            
+
             // Draw square range.
             for (var i = 0; SpreadType == SpreadType.RandomSequence && i < RandomSequence.Length; i++)
             {
@@ -88,7 +95,7 @@ namespace Weapons.Aiming.Shapes
                 case SpreadType.RandomSequence:
                     var range = RandomSequence[NextIndex()];
                     var randomPoint = range.Shift + new Vector3(
-                        Random.value.Map(0.0f, 1.0f, range.Area.x, range.Area.y), 
+                        Random.value.Map(0.0f, 1.0f, range.Area.x, range.Area.y),
                         Random.value.Map(0.0f, 1.0f, range.Area.z, range.Area.w));
 
                     return AlignWithAccuracy ? Clamp(randomPoint) : randomPoint;

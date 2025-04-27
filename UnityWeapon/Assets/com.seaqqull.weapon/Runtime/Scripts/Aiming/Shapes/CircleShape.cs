@@ -12,16 +12,16 @@ namespace Weapons.Aiming.Shapes
         public override void DrawGizmos(Vector3 position, Vector3 forward, Quaternion rotation, Color shapeColor, Color precisionColor)
         {
             base.DrawGizmos(position, forward, rotation, shapeColor, precisionColor);
-            
-            DrawCircleGizmo(position, rotation, 
-                offset: forward * _property.Distance, 
+
+            DrawCircleGizmo(position, rotation,
+                offset: forward * _property.Distance,
                 radius: _property.Radius,
                 color: shapeColor);
-            DrawCircleGizmo(position, rotation, 
+            DrawCircleGizmo(position, rotation,
                 offset: forward * _property.Distance,
-                radius: (_property.Radius * (1 - _property.Precision)), 
+                radius: (_property.Radius * (1 - _property.Precision)),
                 color: precisionColor);
-            
+
             void DrawCircleGizmo(Vector3 position, Quaternion rotation, Vector3 offset = new(), float radius = 0, Color color = new())
             {
                 if (radius <= 0 && _edgesCount < 3) return;
@@ -37,18 +37,18 @@ namespace Weapons.Aiming.Shapes
                 Gizmos.DrawLine(vertices[^1], vertices[0]);
                 Gizmos.color = originalColor;
             }
-            
+
             Vector3[] CreateCircle(Vector3 position, Quaternion rotation, float radius, int edgeCount)
             {
                 var angleStep = (360.0f / edgeCount);
                 var vertices = new Vector3[edgeCount];
-            
+
                 for (var i = 0; i < edgeCount; i++)
                 {
                     var angle = i * angleStep;
                     var arcPoint = new Vector3(
-                        Mathf.Sin(Mathf.Deg2Rad *  angle) * radius, 
-                        Mathf.Cos(Mathf.Deg2Rad *  angle) * radius, 
+                        Mathf.Sin(Mathf.Deg2Rad * angle) * radius,
+                        Mathf.Cos(Mathf.Deg2Rad * angle) * radius,
                         0);
 
                     vertices[i] = position + rotation * arcPoint;
@@ -57,11 +57,11 @@ namespace Weapons.Aiming.Shapes
                 return vertices;
             }
         }
-        
+
         public override Vector3 CalculateVector()
         {
-            var rndPos = Random.insideUnitCircle * _property.Radius * (1 - _property.Precision);
-            return new Vector3(rndPos.x, rndPos.y, 0);
+            var position = Random.insideUnitCircle * _property.Radius * (1 - _property.Precision);
+            return new Vector3(position.x, position.y, 0);
         }
 
         public override Vector3 Clamp(Vector3 point)

@@ -15,7 +15,7 @@ namespace Weapons.Aiming.Following
         {
             for (var i = 0; i < flow.Length; i++)
                 _direction += flow[i].Direction;
-            _direction = _direction.normalized;
+            _direction /= flow.Length;
         }
         
 

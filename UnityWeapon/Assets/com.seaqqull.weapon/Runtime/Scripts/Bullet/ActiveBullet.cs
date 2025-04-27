@@ -73,7 +73,7 @@ namespace Weapons.Bullets
 
         protected virtual void OnBulletDestroy()
         {
-            _rigidbody.velocity = Vector3.zero;
+            _rigidbody.linearVelocity = Vector3.zero;
             Pooler.Return(this);
         }
 
@@ -84,8 +84,8 @@ namespace Weapons.Bullets
 
         protected virtual global::Weapon.Utility.IEntity CheckBulletCollision(Collider obstacle)
         {
-            return (_isLaunched && ((1 << obstacle.gameObject.layer) & TargetMask) != 0) 
-                ? obstacle.GetComponent<global::Weapon.Utility.IEntity>() 
+            return (_isLaunched && ((1 << obstacle.gameObject.layer) & TargetMask) != 0)
+                ? obstacle.GetComponent<global::Weapon.Utility.IEntity>()
                 : null;
         }
 
@@ -159,9 +159,11 @@ namespace Weapons.Bullets
                 FollowType.SmoothedFollow => new SmoothedFlowFollower(flow),
                 _ => new StartFollower(flow)
             };
+
             Transform.position = flow[0].From;
+            Transform.rotation = Quaternion.LookRotation(flow[0].Direction);
         }
-        
+
         public void BakeFlowDirection(Transform bulletFlow)
         {
             BakeFlowDirection(bulletFlow, bulletFlow.rotation);
