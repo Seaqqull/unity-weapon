@@ -1,10 +1,10 @@
 {
     "name": "com.seaqqull.weapon",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "displayName": "Weapon",
     "description": "Weapon classes.",
-    "unity": "2022.3",
-    "unityRelease": "1f1",
+    "unity": "6000.0",
+    "unityRelease": "35f1",
     "documentationUrl": "https://github.com/Seaqqull/unity-weapon?path=/UnityWeapon/Assets/com.seaqqull.weapon/Documentation/com.seaqqull.weapon.md",
     "changelogUrl": "https://github.com/Seaqqull/unity-weapon?path=/UnityWeapon/Assets/com.seaqqull.weapon/CHANGELOG.md",
     "licenseUrl" : "https://github.com/Seaqqull/unity-weapon?path=/UnityWeapon/Assets/com.seaqqull.weapon/LICENSE.md",
