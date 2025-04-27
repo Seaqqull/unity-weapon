@@ -1,12 +1,13 @@
-﻿using Weapon.Computing;
+﻿using UnityEngine;
+using Weapon.Computing;
 
 
 namespace Weapons.Shooting
 {
     public abstract class ShootingMode : ComputingHandler, IShootingMode
     {
-        public int BulletsToPerformShot => 1;
-        public float TimeBetweenShot => 0.1f;
+        [field: SerializeField] public virtual int BulletsToPerformShot { get; private set; } = 1;
+        [field: SerializeField] public virtual float TimeBetweenShot { get; private set; } = 0.1f;
 
 
         public abstract bool IsExecutable(IWeapon weapon);

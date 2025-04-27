@@ -49,10 +49,10 @@ namespace Weapons
         #region Variables
         protected FloatRange _actionProgress = new();
         protected StateInfo _stateInfo = new();
-        protected WaitForSeconds _uiUpdateTime;
         protected Coroutine _actionCoroutine;
         protected GameObject _bulletsStorage;
         protected Action _stateResultAction;
+        protected float _uiUpdateTime;
         protected WeaponState _state;
         protected IStorage _storage;
         #endregion
@@ -117,8 +117,8 @@ namespace Weapons
             {
                 _uiUpdateRate = value;
                 _uiUpdateTime = (_uiUpdateRate == UiUpdateRate.FPS_Umlimited)
-                    ? null
-                    :  new WaitForSeconds(1.0f / (int) UiUpdateRate);
+                    ? 0.0f
+                    :  1.0f / (int) UiUpdateRate;
             }
         }
         public WeaponState State
@@ -226,13 +226,17 @@ namespace Weapons
         private IEnumerator ActionRoutine(float min, float max)
         {
             _actionProgress.Update(min, min, max);
+            var uiUpdateTime = _uiUpdateTime;
             while (_actionProgress.Value < _actionProgress.Max)
             {
-                UpdateUI(UIUpdateMode.Progress);
-                var beginWaitTime = Time.time;
+                yield return null;
 
-                yield return _uiUpdateTime;
-                _actionProgress.Value += (Time.time - beginWaitTime);
+                _actionProgress.Value += Time.deltaTime;
+                uiUpdateTime -= Time.deltaTime;
+                if (uiUpdateTime > 0.0f) continue;
+
+                uiUpdateTime = _uiUpdateTime;
+                UpdateUI(UIUpdateMode.Progress);
             }
 
             _actionProgress.Value = _actionProgress.Max;
