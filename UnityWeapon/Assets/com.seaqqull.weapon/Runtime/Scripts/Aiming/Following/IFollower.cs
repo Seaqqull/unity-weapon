@@ -8,7 +8,7 @@ namespace Weapons.Aiming.Following
     {
         IReadOnlyList<Line> Flow { get; }
         Vector3 CurrentDirection { get; }
-        bool CanBeRecalculated { get; }
+        bool CanBeUpdated { get; }
 
         void UpdateDirection(float squaredDistance);
     }

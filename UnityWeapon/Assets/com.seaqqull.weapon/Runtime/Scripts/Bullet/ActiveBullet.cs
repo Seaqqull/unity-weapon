@@ -1,6 +1,5 @@
 ﻿using Weapons.Aiming.Following;
 using Weapon.Storage.Data;
-using Weapons.Aiming;
 using UnityEngine;
 using Weapon.Base;
 using System;
@@ -21,7 +20,6 @@ namespace Weapons.Bullets
         public event Action<ActiveBullet> OnLaunch;
         public event Action<ActiveBullet> OnHit;
 
-        // public IFollowerFabric Follower { get; private set; }
         public LayerMask TargetMask { get; protected set; }
         public float SquaredRange { get; protected set; }
         public bool LookRotation { get; protected set; }
@@ -48,7 +46,7 @@ namespace Weapons.Bullets
             var passedDistance = PassedDistance;
             if (Range > 0.0f && passedDistance > SquaredRange)
                 OnBulletDestroy();
-            if (_flowFollower.CanBeRecalculated)
+            if (_flowFollower.CanBeUpdated)
                 _flowFollower.UpdateDirection(passedDistance);
 
             _rigidbody.MovePosition(Transform.position + (_flowFollower.CurrentDirection * (Speed * Time.fixedDeltaTime)));

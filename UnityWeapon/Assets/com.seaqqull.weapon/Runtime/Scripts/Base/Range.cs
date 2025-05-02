@@ -1,6 +1,9 @@
+using System;
+
+
 namespace Weapon.Base
 {
-    public abstract class Range<T>
+    public abstract class Range<T> where T : IComparable<T>
     {
         public abstract float Progress { get; }
 
@@ -8,8 +11,7 @@ namespace Weapon.Base
         public T Min;
         public T Max;
 
-        public bool IsReached => Progress >= 1.0f;
-
+        public virtual bool IsReached => Progress >= 1.0f;
 
         public void Reset()
         {
@@ -24,6 +26,9 @@ namespace Weapon.Base
             Max = max;
             Min = min;
         }
+
+        public void End() =>
+            Value = Max;
     }
 
 }

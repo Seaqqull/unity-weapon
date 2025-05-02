@@ -1,3 +1,4 @@
+using Weapons.Aiming.Shapes.Regions;
 using System.Collections.Generic;
 using Weapons.Aiming.Shapes;
 using Utilities.Methods;
@@ -12,7 +13,7 @@ namespace Weapons.Aiming
         [SerializeField] private SpreadShape _beginSegment;
         [SerializeField] private SpreadShape _middleSegment;
         [SerializeField] private SpreadShape _endSegment;
-        [Header("Visualization")] 
+        [Header("Visualization")]
         [SerializeField] [Range(0, 1)] private float _randomDirectionTransparency;
         [Header("Preferences")]
         [SerializeField] private bool _segmentsInfluenceNextPosition;
@@ -41,14 +42,14 @@ namespace Weapons.Aiming
                 segment.DrawGizmos(position, forward, rotation, _shapeColor, _precisionColor);
                 position += (forward * segment.Property.Distance);
             }
-            
+
             // Samples.
             for(var i = 1; i < _sampleLines.Count; i++)
             {
                 Gizmos.color = ShapeFromIndex(i - 1).Property.Color;
                 Gizmos.DrawLine(_sampleLines[i - 1], _sampleLines[i]);
             }
-            
+
             if (!_showRelativeSegments)
                 return;
 
@@ -58,7 +59,7 @@ namespace Weapons.Aiming
             for(var i = 0; i < _sampleLines.Count - 1; i++)
                 ShapeFromIndex(i).DrawGizmos(_sampleLines[i], forward, rotation, sampleShapeColor, precisionShapeColor);
         }
-       
+
         private SpreadShape ShapeFromIndex(int index)
         {
             return index switch
@@ -75,7 +76,7 @@ namespace Weapons.Aiming
         {
             var lines = CreateDirection();
             ClearRandomDirection();
-            
+
             foreach (var line in lines)
                 _sampleLines.Add(line.From);
             _sampleLines.Add(lines[^1].From + lines[^1].Direction * lines[^1].SquaredLength);
@@ -88,10 +89,10 @@ namespace Weapons.Aiming
         }
 
         private static float MapAccuracy(float from, float ratio) =>
-            ratio >= 0.0f 
-                ? ratio >= 0.5f ? ratio.Map(0.5f, 1.0f, from * 2.0f, 1.0f) 
+            ratio >= 0.0f
+                ? ratio >= 0.5f ? ratio.Map(0.5f, 1.0f, from * 2.0f, 1.0f)
                     : ratio.Map(0.0f, 0.5f, from, from * 2.0f)
-                : ratio < -0.5f ? ratio.Map(-0.5f, -1.0f, from * 0.5f, 0.0f) 
+                : ratio < -0.5f ? ratio.Map(-0.5f, -1.0f, from * 0.5f, 0.0f)
                     : ratio.Map(0.0f, -0.5f, from, from * 0.5f);
 
 
@@ -136,7 +137,7 @@ namespace Weapons.Aiming
                 _endSegment.Property.Precision = percent;
                 return;
             }
-            
+
             var absoluteAspectRatio = Mathf.Abs(aspectRatio);
             var mappedAccuracy = MapAccuracy(percent, absoluteAspectRatio);
             if (aspectRatio > 0.0f)
@@ -150,7 +151,7 @@ namespace Weapons.Aiming
                 _endSegment.Property.Precision = percent;
             }
         }
-        
+
         public void SetGlobalAccuracyFromMiddle(float percent, float aspectRatio)
         {
             aspectRatio = Mathf.Clamp(aspectRatio, -1.0f, 1.0f);

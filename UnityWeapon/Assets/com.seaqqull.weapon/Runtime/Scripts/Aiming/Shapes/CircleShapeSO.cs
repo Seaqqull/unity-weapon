@@ -1,10 +1,11 @@
+using Weapons.Aiming.Shapes.Regions;
 using UnityEngine;
 
 
 namespace Weapons.Aiming.Shapes
 {
     [CreateAssetMenu(fileName = "CircleShape", menuName = "Weapon/Aiming/Shapes/Circle", order = 0)]
-    public class CircleShapeSO : Shape<CircleRegion>
+    public class CircleShapeSO : ShapeSO<CircleRegion>
     {
         [SerializeField] private int _edgesCount = 10;
 
@@ -64,14 +65,10 @@ namespace Weapons.Aiming.Shapes
             return new Vector3(position.x, position.y, 0);
         }
 
-        public override Vector3 Clamp(Vector3 point)
-        {
-            return Vector3.ClampMagnitude(point, _property.Radius * (1 - _property.Precision));
-        }
+        public override Vector3 Clamp(Vector3 point) =>
+            Vector3.ClampMagnitude(point, _property.Radius * (1 - _property.Precision));
 
-        public override Vector3 CalculateVector(Vector3 position, Quaternion rotation)
-        {
-            return position + (rotation * CalculateVector());
-        }
+        public override Vector3 CalculateVector(Vector3 position, Quaternion rotation) =>
+            position + (rotation * CalculateVector());
     }
 }

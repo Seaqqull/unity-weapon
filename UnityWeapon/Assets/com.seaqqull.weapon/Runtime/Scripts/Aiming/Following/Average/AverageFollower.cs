@@ -10,7 +10,7 @@ namespace Weapons.Aiming.Following
     private readonly Vector3 _calculatedDirection;
 
     public Vector3 CurrentDirection { get; private set; }
-    public bool CanBeRecalculated { get; private set; } = true;
+    public bool CanBeUpdated { get; private set; } = true;
 
 
     public AverageFollower(IReadOnlyList<Line> flow)
@@ -27,10 +27,10 @@ namespace Weapons.Aiming.Following
 
     public void UpdateDirection(float squaredDistance)
     {
-      if (!CanBeRecalculated) return;
+      if (!CanBeUpdated) return;
 
       CurrentDirection = _calculatedDirection;
-      CanBeRecalculated = false;
+      CanBeUpdated = false;
     }
   }
 }

@@ -1,11 +1,12 @@
 using Utilities.Methods;
 using UnityEngine;
+using Weapons.Aiming.Shapes.Regions;
 
 
 namespace Weapons.Aiming.Shapes
 {
     [CreateAssetMenu(fileName = "RectangleShape", menuName = "Weapon/Aiming/Shapes/Rectangle", order = 0)]
-    public class RectangleShapeSO : Shape<RectangleRegion>
+    public class RectangleShapeSO : ShapeSO<RectangleRegion>
     {
         public override void DrawGizmos(Vector3 position, Vector3 forward, Quaternion rotation, Color shapeColor, Color precisionColor)
         {
@@ -69,9 +70,7 @@ namespace Weapons.Aiming.Shapes
             );
         }
 
-        public override Vector3 CalculateVector(Vector3 position, Quaternion rotation)
-        {
-            return position + (rotation * CalculateVector());
-        }
+        public override Vector3 CalculateVector(Vector3 position, Quaternion rotation) =>
+            position + (rotation * CalculateVector());
     }
 }

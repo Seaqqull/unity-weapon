@@ -14,7 +14,8 @@ namespace Weapons.Data
 
     public class FloatRange : Range<float>
     {
-        public override float Progress => Mathf.InverseLerp(Min, Max, Value); 
+        public override float Progress => Mathf.InverseLerp(Min, Max, Value);
+        public override bool IsReached => Value >= Max;
     }
 
     [Serializable] public class AmmoComputeData : ComputingData<Ammo.AmmoHandler, Ammo.AmmoController> { }

@@ -227,7 +227,7 @@ namespace Weapons
         {
             _actionProgress.Update(min, min, max);
             var uiUpdateTime = _uiUpdateTime;
-            while (_actionProgress.Value < _actionProgress.Max)
+            while (!_actionProgress.IsReached)
             {
                 yield return null;
 
@@ -239,7 +239,7 @@ namespace Weapons
                 UpdateUI(UIUpdateMode.Progress);
             }
 
-            _actionProgress.Value = _actionProgress.Max;
+            _actionProgress.End();
             UpdateUI(UIUpdateMode.Progress);
             _actionProgress.Reset();
 
@@ -285,15 +285,11 @@ namespace Weapons
         }
 
         [ContextMenu("Clear sample direction")]
-        public void MakeShot()
-        {
+        public void MakeShot() =>
             Shoot();
-        }
 
-        public GameObject NextBullet()
-        {
-            return _storage.Pool(_activeAmmo);
-        }
+        public GameObject NextBullet() =>
+            _storage.Pool(_activeAmmo);
 
         public bool Reload()
         {

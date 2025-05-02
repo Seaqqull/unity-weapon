@@ -11,17 +11,13 @@ namespace Weapon.Storage
         private Dictionary<int, Pooler> _pools = new();
 
 
-        public Storage(GameObject owner)
-        {
+        public Storage(GameObject owner) =>
             _owner = owner;
-        }
 
 
-        public GameObject Pool(int id)
-        {
-            return _pools.TryGetValue(id, out var pool) ? pool.Pool() : null;
-        }
-        
+        public GameObject Pool(int id) =>
+            _pools.TryGetValue(id, out var pool) ? pool.Pool() : null;
+
         public void Populate(GameObject spawnObject, StorageData properties)
         {
             if (!_pools.ContainsKey(properties.Id))

@@ -10,7 +10,7 @@ namespace Weapons.Aiming.Following
 
     public IReadOnlyList<Line> Flow { get; }
     public Vector3 CurrentDirection { get; private set; }
-    public bool CanBeRecalculated { get; private set; } = true;
+    public bool CanBeUpdated { get; private set; } = true;
 
 
     public FlowFollower(IReadOnlyList<Line> flow)
@@ -32,10 +32,10 @@ namespace Weapons.Aiming.Following
         CurrentDirection = Flow[i - 1].Direction;
         return;
       }
-      if (!CanBeRecalculated) return;
+      if (!CanBeUpdated) return;
 
       CurrentDirection = Flow[^1].Direction;
-      CanBeRecalculated = false;
+      CanBeUpdated = false;
     }
   }
 }

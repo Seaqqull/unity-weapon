@@ -10,7 +10,7 @@ namespace Weapons.Aiming.Following
 
     public IReadOnlyList<Line> Flow { get; }
     public Vector3 CurrentDirection { get; private set; }
-    public bool CanBeRecalculated { get; private set; } = true;
+    public bool CanBeUpdated { get; private set; } = true;
 
 
     public SmoothedFlowFollower(IReadOnlyList<Line> flow)
@@ -33,10 +33,10 @@ namespace Weapons.Aiming.Following
         CurrentDirection = Vector3.Lerp(Flow[i - 1].Direction, Flow[i].Direction, lerp).normalized;
         return;
       }
-      if (!CanBeRecalculated) return;
+      if (!CanBeUpdated) return;
 
       CurrentDirection = Flow[^1].Direction;
-      CanBeRecalculated = false;
+      CanBeUpdated = false;
     }
   }
 }

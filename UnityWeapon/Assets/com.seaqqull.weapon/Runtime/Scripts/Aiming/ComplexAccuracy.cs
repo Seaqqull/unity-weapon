@@ -9,7 +9,7 @@ namespace Weapons.Aiming
     {
         [SerializeField] private ShapeSO _beginSegment;
         [SerializeField] private ShapeSO[] _segments;
-        [Header("Visualization")] 
+        [Header("Visualization")]
         [SerializeField] [Range(0, 1)] private float _randomDirectionTransparency;
         [Header("Preferences")]
         [SerializeField] private bool _segmentsInfluenceNextPosition;
@@ -28,7 +28,7 @@ namespace Weapons.Aiming
 
             if (_beginSegment != null)
                 _beginSegment.DrawGizmos(position, Vector3.zero, rotation, _shapeColor, _precisionColor);
-            
+
             foreach (var segment in _segments)
             {
                 segment.DrawGizmos(position, forward, rotation, _shapeColor, _precisionColor);
@@ -56,7 +56,7 @@ namespace Weapons.Aiming
         protected override void MakeRandomDirection()
         {
             var lines = CreateDirection();
-            
+
             ClearRandomDirection();
             foreach (var line in lines)
                 _sampleLines.Add(line.From);
@@ -64,10 +64,8 @@ namespace Weapons.Aiming
         }
 
         [ContextMenu("Clear sample direction")]
-        protected override void ClearRandomDirection()
-        {
+        protected override void ClearRandomDirection() =>
             _sampleLines.Clear();
-        }
 
 
         public override Line[] CreateDirection()

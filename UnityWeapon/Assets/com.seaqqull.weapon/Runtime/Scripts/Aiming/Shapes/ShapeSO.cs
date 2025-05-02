@@ -1,3 +1,4 @@
+using Weapons.Aiming.Shapes.Regions;
 using UnityEngine;
 
 
@@ -6,7 +7,9 @@ namespace Weapons.Aiming.Shapes
     public abstract class ShapeSO : ScriptableObject, IShape
     {
         private IShape _shapeImplementation;
+
         public abstract Region Property { get; }
+
 
         public virtual void DrawGizmos(Vector3 position, Vector3 forward, Quaternion rotation, Color shapeColor, Color precisionColor)
         {
@@ -20,7 +23,7 @@ namespace Weapons.Aiming.Shapes
         public abstract Vector3 CalculateVector(Vector3 position, Quaternion rotation);
     }
 
-    public abstract class Shape<T> : ShapeSO
+    public abstract class ShapeSO<T> : ShapeSO
         where T : Region
     {
         [SerializeField] protected T _property;

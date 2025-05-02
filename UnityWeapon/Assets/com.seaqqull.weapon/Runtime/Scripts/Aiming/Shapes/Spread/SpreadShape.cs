@@ -1,3 +1,4 @@
+using Weapons.Aiming.Shapes.Regions;
 using Random = UnityEngine.Random;
 using Utilities.Methods;
 #if UNITY_EDITOR
@@ -125,15 +126,11 @@ namespace Weapons.Aiming.Shapes
             }
         }
 
-        public Vector3 Clamp(Vector3 point)
-        {
-            return Shape.Clamp(point);
-        }
+        public Vector3 Clamp(Vector3 point) =>
+            Shape.Clamp(point);
 
-        public Vector3 CalculateVector(Vector3 position, Quaternion rotation)
-        {
-            return position + (rotation * CalculateVector());
-        }
+        public Vector3 CalculateVector(Vector3 position, Quaternion rotation) =>
+            position + (rotation * CalculateVector());
 
         public static implicit operator ShapeSO(SpreadShape spread) => spread.Shape;
     }

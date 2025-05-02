@@ -1,5 +1,6 @@
-using UnityEngine;
 using Weapons.Aiming.Following;
+using UnityEngine;
+
 
 namespace Weapons.Bullets
 {
