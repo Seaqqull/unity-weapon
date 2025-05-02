@@ -6,7 +6,7 @@ namespace Weapons.Bullets
 {
     public interface IBulletData
     {
-        FollowType FollowType { get; }
+        FollowerFabricSO Follower { get; }
         LayerMask TargetMask { get; }
         bool LookRotation { get; }
         int Damage { get; }

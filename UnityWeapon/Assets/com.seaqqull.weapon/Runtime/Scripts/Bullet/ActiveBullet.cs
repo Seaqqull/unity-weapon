@@ -11,6 +11,7 @@ namespace Weapons.Bullets
     [RequireComponent(typeof(Rigidbody))]
     public abstract class ActiveBullet : BaseMonoBehaviour, IBullet, IBulletData, IPoolable
     {
+
         protected Vector3 _startPosition;
         protected Rigidbody _rigidbody;
         protected bool _isLaunched;
@@ -21,7 +22,7 @@ namespace Weapons.Bullets
         public event Action<ActiveBullet> OnLaunch;
         public event Action<ActiveBullet> OnHit;
 
-        public FollowType FollowType { get; protected set; }
+        public FollowerFabricSO Follower { get; private set; }
         public LayerMask TargetMask { get; protected set; }
         public float SquaredRange { get; protected set; }
         public bool LookRotation { get; protected set; }
@@ -53,7 +54,7 @@ namespace Weapons.Bullets
 
             _rigidbody.MovePosition(Transform.position + (_flowFollower.FollowDirection * (Speed * Time.fixedDeltaTime)));
             if (LookRotation)
-                Transform.rotation = Quaternion.LookRotation(_flowFollower!.FollowDirection);
+                Transform.rotation = Quaternion.LookRotation(_flowFollower.FollowDirection);
         }
 
 
@@ -139,7 +140,7 @@ namespace Weapons.Bullets
         public void Bake(IBulletData data)
         {
             LookRotation = data.LookRotation;
-            FollowType = data.FollowType;
+            Follower = data.Follower;
             Damage = data.Damage;
             Speed = data.Speed;
             Range = data.Range;
@@ -150,15 +151,7 @@ namespace Weapons.Bullets
 
         public void BakeFlowDirection(Line[] flow)
         {
-            _flowFollower = FollowType switch
-            {
-                FollowType.Start => new StartFollower(flow),
-                FollowType.End => new EndFollower(flow),
-                FollowType.Average => new AverageFollower(flow),
-                FollowType.Follow => new FlowFollower(flow),
-                FollowType.SmoothedFollow => new SmoothedFlowFollower(flow),
-                _ => new StartFollower(flow)
-            };
+            _flowFollower = Follower.Create(flow);
 
             Transform.position = flow[0].From;
             Transform.rotation = Quaternion.LookRotation(flow[0].Direction);

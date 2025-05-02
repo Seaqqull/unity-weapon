@@ -9,7 +9,7 @@ namespace Weapons.Bullets
     {
         [field: SerializeField] public GameObject BulletObject { get; private set; }
         [field: SerializeField] public bool LookRotation { get; private set; } = true;
-        [field: SerializeField] public FollowType FollowType { get; private set; }
+        [field: SerializeField] public FollowerFabricSO Follower { get; private set; }
         [field: Space]
         [field: SerializeField] public int Damage { get; private set; }
         [field: SerializeField] public float Speed { get; private set; }
