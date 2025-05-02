@@ -6,11 +6,11 @@ namespace Weapons.Aiming.Following
 {
   public class SmoothedFlowFollower : IFollower
   {
-    private bool _isValid = true;
-    private float[] _distances;
-    private IReadOnlyList<Line> _flow;
+    private readonly IReadOnlyList<Line> _flow;
+    private readonly float[] _distances;
 
-    public Vector3 FollowDirection { get; private set; }
+    public Vector3 Direction { get; private set; }
+    public bool CanBeRecalculated { get; private set; } = true;
 
 
     public SmoothedFlowFollower(IReadOnlyList<Line> flow)
@@ -23,22 +23,20 @@ namespace Weapons.Aiming.Following
     }
 
 
-    public bool IsValid() => _isValid;
-
-    public void UpdateDirection(float squaredDistance)
+    public void Recalculate(float squaredDistance)
     {
       for (var i = 0; i < _distances.Length - 1; i++)
       {
         if (squaredDistance >= _distances[i]) continue;
 
         var lerp = Mathf.InverseLerp(_distances[i - 1], _distances[i], squaredDistance);
-        FollowDirection = Vector3.Lerp(_flow[i - 1].Direction, _flow[i].Direction, lerp).normalized;
+        Direction = Vector3.Lerp(_flow[i - 1].Direction, _flow[i].Direction, lerp).normalized;
         return;
       }
-      if (!_isValid) return;
+      if (!CanBeRecalculated) return;
 
-      FollowDirection = _flow[^1].Direction;
-      _isValid = false;
+      Direction = _flow[^1].Direction;
+      CanBeRecalculated = false;
     }
   }
 }

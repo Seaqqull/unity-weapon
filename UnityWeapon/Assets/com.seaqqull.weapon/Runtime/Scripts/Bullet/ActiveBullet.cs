@@ -11,7 +11,6 @@ namespace Weapons.Bullets
     [RequireComponent(typeof(Rigidbody))]
     public abstract class ActiveBullet : BaseMonoBehaviour, IBullet, IBulletData, IPoolable
     {
-
         protected Vector3 _startPosition;
         protected Rigidbody _rigidbody;
         protected bool _isLaunched;
@@ -22,7 +21,7 @@ namespace Weapons.Bullets
         public event Action<ActiveBullet> OnLaunch;
         public event Action<ActiveBullet> OnHit;
 
-        public FollowerFabricSO Follower { get; private set; }
+        public IFollowerFabric Follower { get; private set; }
         public LayerMask TargetMask { get; protected set; }
         public float SquaredRange { get; protected set; }
         public bool LookRotation { get; protected set; }
@@ -49,12 +48,12 @@ namespace Weapons.Bullets
             var passedDistance = PassedDistance;
             if (Range > 0.0f && passedDistance > SquaredRange)
                 OnBulletDestroy();
-            if (_flowFollower.IsValid())
-                _flowFollower.UpdateDirection(passedDistance);
+            if (_flowFollower.CanBeRecalculated)
+                _flowFollower.Recalculate(passedDistance);
 
-            _rigidbody.MovePosition(Transform.position + (_flowFollower.FollowDirection * (Speed * Time.fixedDeltaTime)));
+            _rigidbody.MovePosition(Transform.position + (_flowFollower.Direction * (Speed * Time.fixedDeltaTime)));
             if (LookRotation)
-                Transform.rotation = Quaternion.LookRotation(_flowFollower.FollowDirection);
+                Transform.rotation = Quaternion.LookRotation(_flowFollower.Direction);
         }
 
 

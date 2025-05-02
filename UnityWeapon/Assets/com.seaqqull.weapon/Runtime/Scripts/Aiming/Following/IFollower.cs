@@ -5,10 +5,9 @@ namespace Weapons.Aiming.Following
 {
     public interface IFollower
     {
-        Vector3 FollowDirection { get; }
+        Vector3 Direction { get; }
+        bool CanBeRecalculated { get; }
 
-
-        bool IsValid();
-        void UpdateDirection(float squaredDistance);
+        void Recalculate(float squaredDistance);
     }
 }

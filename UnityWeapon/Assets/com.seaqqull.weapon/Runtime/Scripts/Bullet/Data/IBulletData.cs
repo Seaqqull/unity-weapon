@@ -6,7 +6,9 @@ namespace Weapons.Bullets
 {
     public interface IBulletData
     {
-        FollowerFabricSO Follower { get; }
+        static IBulletData Empty { get; } = new BulletData();
+
+        IFollowerFabric Follower { get; }
         LayerMask TargetMask { get; }
         bool LookRotation { get; }
         int Damage { get; }

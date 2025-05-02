@@ -6,11 +6,11 @@ namespace Weapons.Aiming.Following
 {
   public class FlowFollower : IFollower
   {
-    private bool _isValid = true;
-    private float[] _distances;
-    private IReadOnlyList<Line> _flow;
+    private readonly IReadOnlyList<Line> _flow;
+    private readonly float[] _distances;
 
-    public Vector3 FollowDirection { get; private set; }
+    public Vector3 Direction { get; private set; }
+    public bool CanBeRecalculated { get; private set; } = true;
 
 
     public FlowFollower(IReadOnlyList<Line> flow)
@@ -23,21 +23,19 @@ namespace Weapons.Aiming.Following
     }
 
 
-    public bool IsValid() => _isValid;
-
-    public void UpdateDirection(float squaredDistance)
+    public void Recalculate(float squaredDistance)
     {
       for (var i = 0; i < _distances.Length; i++)
       {
         if (squaredDistance >= _distances[i]) continue;
 
-        FollowDirection = _flow[i - 1].Direction;
+        Direction = _flow[i - 1].Direction;
         return;
       }
-      if (!_isValid) return;
+      if (!CanBeRecalculated) return;
 
-      FollowDirection = _flow[^1].Direction;
-      _isValid = false;
+      Direction = _flow[^1].Direction;
+      CanBeRecalculated = false;
     }
   }
 }
