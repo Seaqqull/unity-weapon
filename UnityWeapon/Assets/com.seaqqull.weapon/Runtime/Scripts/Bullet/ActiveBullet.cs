@@ -8,7 +8,7 @@ using System;
 
 namespace Weapons.Bullets
 {
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(Rigidbody)), DisallowMultipleComponent]
     public abstract class ActiveBullet : BaseMonoBehaviour, IBullet, IBulletData, IPoolable
     {
         protected Vector3 _startPosition;
@@ -21,7 +21,7 @@ namespace Weapons.Bullets
         public event Action<ActiveBullet> OnLaunch;
         public event Action<ActiveBullet> OnHit;
 
-        public IFollowerFabric Follower { get; private set; }
+        // public IFollowerFabric Follower { get; private set; }
         public LayerMask TargetMask { get; protected set; }
         public float SquaredRange { get; protected set; }
         public bool LookRotation { get; protected set; }
@@ -49,11 +49,11 @@ namespace Weapons.Bullets
             if (Range > 0.0f && passedDistance > SquaredRange)
                 OnBulletDestroy();
             if (_flowFollower.CanBeRecalculated)
-                _flowFollower.Recalculate(passedDistance);
+                _flowFollower.UpdateDirection(passedDistance);
 
-            _rigidbody.MovePosition(Transform.position + (_flowFollower.Direction * (Speed * Time.fixedDeltaTime)));
+            _rigidbody.MovePosition(Transform.position + (_flowFollower.CurrentDirection * (Speed * Time.fixedDeltaTime)));
             if (LookRotation)
-                Transform.rotation = Quaternion.LookRotation(_flowFollower.Direction);
+                Transform.rotation = Quaternion.LookRotation(_flowFollower.CurrentDirection);
         }
 
 
@@ -73,7 +73,11 @@ namespace Weapons.Bullets
 
         protected virtual void OnBulletDestroy()
         {
+            StopAllCoroutines();
+
             _rigidbody.linearVelocity = Vector3.zero;
+            Bake(IBulletData.Empty);
+
             Pooler.Return(this);
         }
 
@@ -139,7 +143,6 @@ namespace Weapons.Bullets
         public void Bake(IBulletData data)
         {
             LookRotation = data.LookRotation;
-            Follower = data.Follower;
             Damage = data.Damage;
             Speed = data.Speed;
             Range = data.Range;
@@ -148,12 +151,12 @@ namespace Weapons.Bullets
             TargetMask = data.TargetMask;
         }
 
-        public void BakeFlowDirection(Line[] flow)
+        public void BakeFlowDirection(IFollower follower)
         {
-            _flowFollower = Follower.Create(flow);
+            _flowFollower = follower;
 
-            Transform.position = flow[0].From;
-            Transform.rotation = Quaternion.LookRotation(flow[0].Direction);
+            Transform.position = follower.Flow[0].From;
+            Transform.rotation = Quaternion.LookRotation(follower.Flow[0].Direction);
         }
 
         public void BakeFlowDirection(Transform bulletFlow)

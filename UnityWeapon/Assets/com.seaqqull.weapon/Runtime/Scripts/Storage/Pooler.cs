@@ -22,7 +22,7 @@ namespace Weapon.Storage
             _owner = owner;
 
             Properties = properties;
-            
+
             _queue = new GameObject($"Queue - {properties.Id}");
 
             _queue.transform.parent = _owner.transform;
@@ -31,15 +31,15 @@ namespace Weapon.Storage
 
             PoolExtend(Properties.PoolAmount);
         }
-        
-        /// <summary> 
+
+        /// <summary>
         /// Instantiates object and adds it too pool
         /// </summary>
         protected virtual void PoolCreate()
         {
             var dummyIn = GameObject.Instantiate(_spawnObject, _queue.transform);
             dummyIn.SetActive(false);
-            
+
             if (dummyIn.TryGetComponent<IPoolable>(out var poolableDummy))
                 poolableDummy.Pooler = this;
 
@@ -109,7 +109,7 @@ namespace Weapon.Storage
                 PoolIn(poolable.GameObject);
                 return;
             }
-            
+
             for (var i = 0; i < reduceAmount; i++)
                 GameObject.Destroy(_objectsToPool.Dequeue());
             GameObject.Destroy(poolable.GameObject);

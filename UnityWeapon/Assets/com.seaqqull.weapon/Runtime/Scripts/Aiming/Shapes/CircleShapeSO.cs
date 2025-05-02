@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Weapons.Aiming.Shapes
 {
     [CreateAssetMenu(fileName = "CircleShape", menuName = "Weapon/Aiming/Shapes/Circle", order = 0)]
-    public class CircleShape : Shape<CircleRegion>
+    public class CircleShapeSO : Shape<CircleRegion>
     {
         [SerializeField] private int _edgesCount = 10;
 

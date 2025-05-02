@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Weapons.Aiming.Following
 {
-  public abstract class FollowerFabricSO : ScriptableObject, IFollowerFabric
+  public abstract class FollowerFactorySO : ScriptableObject, IFollowerFabric
   {
     public abstract IFollower Create(IReadOnlyList<Line> flow);
   }

@@ -5,20 +5,20 @@ using UnityEngine;
 namespace Weapons.Aiming.Shapes
 {
     [CreateAssetMenu(fileName = "RectangleShape", menuName = "Weapon/Aiming/Shapes/Rectangle", order = 0)]
-    public class RectangleShape : Shape<RectangleRegion>
+    public class RectangleShapeSO : Shape<RectangleRegion>
     {
         public override void DrawGizmos(Vector3 position, Vector3 forward, Quaternion rotation, Color shapeColor, Color precisionColor)
         {
             base.DrawGizmos(position, forward, rotation, shapeColor, precisionColor);
 
-            DrawRectangleGizmo(position, rotation, 
-                offset: forward * _property.Distance, 
+            DrawRectangleGizmo(position, rotation,
+                offset: forward * _property.Distance,
                 _property.Width, _property.Height,
                 color: shapeColor);
-            DrawRectangleGizmo(position, rotation, 
+            DrawRectangleGizmo(position, rotation,
                 offset: forward * _property.Distance,
-                width: (_property.Width * (1 - _property.Precision)), 
-                height: (_property.Height * (1 - _property.Precision)), 
+                width: (_property.Width * (1 - _property.Precision)),
+                height: (_property.Height * (1 - _property.Precision)),
                 color: precisionColor);
 
             void DrawRectangleGizmo(Vector3 position, Quaternion rotation, Vector3 offset = new(), float width = 1, float height = 1, Color color = new())
@@ -34,7 +34,7 @@ namespace Weapons.Aiming.Shapes
                 Gizmos.DrawLine(vertices[^1], vertices[0]);
                 Gizmos.color = originalColor;
             }
-            
+
             Vector3[] CreateRectangle(Vector3 position, Quaternion rotation, float width, float height)
             {
                 var vertices = new Vector3[4];
@@ -61,7 +61,7 @@ namespace Weapons.Aiming.Shapes
             var sizeScale = 1 - _property.Precision;
             var halfHeight = _property.Height / 2 * sizeScale;
             var halfWidth = _property.Width / 2 * sizeScale;
-            
+
             return new Vector3(
                 Mathf.Clamp(point.x, -halfWidth, halfWidth),
                 Mathf.Clamp(point.y, -halfHeight, halfHeight),

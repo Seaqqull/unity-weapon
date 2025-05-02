@@ -6,35 +6,35 @@ namespace Weapons.Aiming.Following
 {
   public class FlowFollower : IFollower
   {
-    private readonly IReadOnlyList<Line> _flow;
     private readonly float[] _distances;
 
-    public Vector3 Direction { get; private set; }
+    public IReadOnlyList<Line> Flow { get; }
+    public Vector3 CurrentDirection { get; private set; }
     public bool CanBeRecalculated { get; private set; } = true;
 
 
     public FlowFollower(IReadOnlyList<Line> flow)
     {
       _distances = new float[flow.Count + 1];
-      _flow = flow;
+      Flow = flow;
 
-      for (var i = 0; i < _flow.Count; i++)
-        _distances[i + 1] = _distances[i] + _flow[i].SquaredLength;
+      for (var i = 0; i < Flow.Count; i++)
+        _distances[i + 1] = _distances[i] + Flow[i].SquaredLength;
     }
 
 
-    public void Recalculate(float squaredDistance)
+    public void UpdateDirection(float squaredDistance)
     {
       for (var i = 0; i < _distances.Length; i++)
       {
         if (squaredDistance >= _distances[i]) continue;
 
-        Direction = _flow[i - 1].Direction;
+        CurrentDirection = Flow[i - 1].Direction;
         return;
       }
       if (!CanBeRecalculated) return;
 
-      Direction = _flow[^1].Direction;
+      CurrentDirection = Flow[^1].Direction;
       CanBeRecalculated = false;
     }
   }

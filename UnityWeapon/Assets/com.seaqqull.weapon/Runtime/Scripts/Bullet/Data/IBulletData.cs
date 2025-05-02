@@ -1,4 +1,3 @@
-using Weapons.Aiming.Following;
 using UnityEngine;
 
 
@@ -8,7 +7,6 @@ namespace Weapons.Bullets
     {
         static IBulletData Empty { get; } = new BulletData();
 
-        IFollowerFabric Follower { get; }
         LayerMask TargetMask { get; }
         bool LookRotation { get; }
         int Damage { get; }

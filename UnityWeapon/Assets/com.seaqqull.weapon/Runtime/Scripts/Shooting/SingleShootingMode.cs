@@ -23,9 +23,9 @@ namespace Weapons.Shooting
                     return;
                 }
 
-                bullet.Bake(weapon.Ammo.BulletData);
+                bullet.Bake(weapon.Ammo.BulletSetup.Data);
                 if (weapon.Accuracy)
-                    bullet.BakeFlowDirection(weapon.Accuracy.CreateDirection());
+                    bullet.BakeFlowDirection(weapon.Ammo.BulletSetup.Follow.FollowerFactory.Create(weapon.Accuracy.CreateDirection()));
                 else if (weapon.BulletFlow)
                     bullet.BakeFlowDirection(weapon.BulletFlow);
 #if UNITY_EDITOR
@@ -36,15 +36,15 @@ namespace Weapons.Shooting
                 bullet.Launch();
             }
         }
-        
-        
+
+
         public override void Perform(IWeapon weapon)
         {
             base.Perform(weapon);
-            
+
             switch (weapon)
             {
-                case IGameObjectWeapon gameObjectWeapon: 
+                case IGameObjectWeapon gameObjectWeapon:
                     EmmitBullet(gameObjectWeapon);
                     break;
             }

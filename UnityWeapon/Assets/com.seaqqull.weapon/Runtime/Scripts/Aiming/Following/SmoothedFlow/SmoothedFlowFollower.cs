@@ -6,36 +6,36 @@ namespace Weapons.Aiming.Following
 {
   public class SmoothedFlowFollower : IFollower
   {
-    private readonly IReadOnlyList<Line> _flow;
     private readonly float[] _distances;
 
-    public Vector3 Direction { get; private set; }
+    public IReadOnlyList<Line> Flow { get; }
+    public Vector3 CurrentDirection { get; private set; }
     public bool CanBeRecalculated { get; private set; } = true;
 
 
     public SmoothedFlowFollower(IReadOnlyList<Line> flow)
     {
       _distances = new float[flow.Count + 1];
-      _flow = flow;
+      Flow = flow;
 
-      for (var i = 0; i < _flow.Count; i++)
-        _distances[i + 1] = _distances[i] + _flow[i].SquaredLength;
+      for (var i = 0; i < Flow.Count; i++)
+        _distances[i + 1] = _distances[i] + Flow[i].SquaredLength;
     }
 
 
-    public void Recalculate(float squaredDistance)
+    public void UpdateDirection(float squaredDistance)
     {
       for (var i = 0; i < _distances.Length - 1; i++)
       {
         if (squaredDistance >= _distances[i]) continue;
 
         var lerp = Mathf.InverseLerp(_distances[i - 1], _distances[i], squaredDistance);
-        Direction = Vector3.Lerp(_flow[i - 1].Direction, _flow[i].Direction, lerp).normalized;
+        CurrentDirection = Vector3.Lerp(Flow[i - 1].Direction, Flow[i].Direction, lerp).normalized;
         return;
       }
       if (!CanBeRecalculated) return;
 
-      Direction = _flow[^1].Direction;
+      CurrentDirection = Flow[^1].Direction;
       CanBeRecalculated = false;
     }
   }

@@ -32,7 +32,7 @@ namespace Weapons.Bullets
 
             _affectedEntities = new List<global::Weapon.Utility.IEntity>();
 
-            RunLater(()=> { OnBulletDestroy(); }, _lifetime);
+            RunLater(OnBulletDestroy, _lifetime);
         }
 
         private bool IsEntityAffected(global::Weapon.Utility.IEntity hittedEntity)

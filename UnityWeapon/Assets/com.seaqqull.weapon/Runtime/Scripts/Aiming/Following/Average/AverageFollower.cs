@@ -6,27 +6,30 @@ namespace Weapons.Aiming.Following
 {
   public class AverageFollower : IFollower
   {
+    public IReadOnlyList<Line> Flow { get; }
     private readonly Vector3 _calculatedDirection;
 
-    public Vector3 Direction { get; private set; }
+    public Vector3 CurrentDirection { get; private set; }
     public bool CanBeRecalculated { get; private set; } = true;
 
 
     public AverageFollower(IReadOnlyList<Line> flow)
     {
+      Flow = flow;
+
       for (var i = 0; i < flow.Count; i++)
         _calculatedDirection += flow[i].Direction;
       _calculatedDirection /= flow.Count;
 
-      Recalculate(0.0f);
+      UpdateDirection(0.0f);
     }
 
 
-    public void Recalculate(float squaredDistance)
+    public void UpdateDirection(float squaredDistance)
     {
       if (!CanBeRecalculated) return;
 
-      Direction = _calculatedDirection;
+      CurrentDirection = _calculatedDirection;
       CanBeRecalculated = false;
     }
   }

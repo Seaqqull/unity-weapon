@@ -12,7 +12,7 @@ namespace Weapons.Ammo
         [SerializeField] [HideInInspector] private string name = "Magazine";
 #pragma warning restore CS0414
 #endif
-        [field: SerializeField] public BulletDataSO Bullet { get; private set; }
+        [field: SerializeField] public BulletSetupSO Bullet { get; private set; }
 
         [field: SerializeField] public int Capacity { get; private set; }
         [field: SerializeField] public int Amount { get; set; }
@@ -23,7 +23,7 @@ namespace Weapons.Ammo
         [field: Space]
         [field: SerializeField] public float ReloadTime { get; private set; }
 
-        public IBulletData BulletData => Bullet;
+        public IBulletSetup BulletSetup => Bullet;
         public int MagazineCount { get; set; }
         public int MagazineAmount { get; set; }
     }

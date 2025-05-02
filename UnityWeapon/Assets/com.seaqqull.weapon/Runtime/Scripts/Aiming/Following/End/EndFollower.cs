@@ -6,25 +6,23 @@ namespace Weapons.Aiming.Following
 {
   public class EndFollower : IFollower
   {
-    private readonly Line _flow;
-
-    public Vector3 Direction { get; private set; }
+    public IReadOnlyList<Line> Flow { get; }
+    public Vector3 CurrentDirection { get; private set; }
     public bool CanBeRecalculated { get; private set; } = true;
 
 
     public EndFollower(IReadOnlyList<Line> flow)
     {
-      _flow = flow[^1];
-
-      Recalculate(0.0f);
+      Flow = flow;
+      UpdateDirection(0.0f);
     }
 
 
-    public void Recalculate(float squaredDistance)
+    public void UpdateDirection(float squaredDistance)
     {
       if (!CanBeRecalculated) return;
 
-      Direction = _flow.Direction;
+      CurrentDirection = Flow[^1].Direction;
       CanBeRecalculated = false;
     }
   }

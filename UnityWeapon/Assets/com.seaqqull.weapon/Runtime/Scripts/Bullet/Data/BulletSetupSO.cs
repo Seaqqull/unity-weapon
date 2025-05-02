@@ -5,11 +5,11 @@ using UnityEngine;
 namespace Weapons.Bullets
 {
     [CreateAssetMenu(menuName = "Weapon/Bullets/Create")]
-    public class BulletDataSO : ScriptableObject, IBulletData
+    public class BulletSetupSO : ScriptableObject, IBulletSetup, IBulletData, IFollowerFactoryProvider
     {
         [field: SerializeField] public GameObject BulletObject { get; private set; }
         [field: SerializeField] public bool LookRotation { get; private set; } = true;
-        [SerializeField] private FollowerFabricSO _follower;
+        [SerializeField] private FollowerFactorySO _follower;
         [field: Space]
         [field: SerializeField] public int Damage { get; private set; }
         [field: SerializeField] public float Speed { get; private set; }
@@ -17,6 +17,8 @@ namespace Weapons.Bullets
         [field: Space]
         [field: SerializeField] public LayerMask TargetMask { get; private set; }
 
-        public IFollowerFabric Follower => _follower;
+        public IFollowerFabric FollowerFactory => _follower;
+        public IFollowerFactoryProvider Follow => this;
+        public IBulletData Data => this;
     }
 }

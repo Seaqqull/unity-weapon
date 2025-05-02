@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Weapons.Aiming.Following
 {
-    [CreateAssetMenu(menuName = "Weapon/Aiming/Following/Start Follower")]
-    public class StartFollowerFabricSO : FollowerFabricSO
+    [CreateAssetMenu(menuName = "Weapon/Aiming/Following/Flow Follower")]
+    public class FlowFollowerFactorySO : FollowerFactorySO
     {
         public override IFollower Create(IReadOnlyList<Line> flow) =>
-            new StartFollower(flow);
+            new FlowFollower(flow);
     }
 }

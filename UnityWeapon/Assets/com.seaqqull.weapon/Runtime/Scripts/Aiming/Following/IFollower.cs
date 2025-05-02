@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -5,9 +6,10 @@ namespace Weapons.Aiming.Following
 {
     public interface IFollower
     {
-        Vector3 Direction { get; }
+        IReadOnlyList<Line> Flow { get; }
+        Vector3 CurrentDirection { get; }
         bool CanBeRecalculated { get; }
 
-        void Recalculate(float squaredDistance);
+        void UpdateDirection(float squaredDistance);
     }
 }

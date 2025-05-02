@@ -7,8 +7,8 @@ namespace Weapons.Aiming
 {
     public class ComplexAccuracy : Accuracy
     {
-        [SerializeField] private Shape _beginSegment;
-        [SerializeField] private Shape[] _segments;
+        [SerializeField] private ShapeSO _beginSegment;
+        [SerializeField] private ShapeSO[] _segments;
         [Header("Visualization")] 
         [SerializeField] [Range(0, 1)] private float _randomDirectionTransparency;
         [Header("Preferences")]

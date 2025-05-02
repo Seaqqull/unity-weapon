@@ -9,12 +9,10 @@ using System;
 
 namespace Weapons.Aiming.Shapes
 {
-    public enum SpreadType { Random, PlaintSequence, RandomSequence}
-
     [Serializable]
     public class SpreadShape : IShape
     {
-        [SerializeField] private Shape Shape;
+        [SerializeField] private ShapeSO Shape;
         [Space]
         [SerializeField] private float VisualizationSize = 0.1f;
         [Space]
@@ -137,6 +135,6 @@ namespace Weapons.Aiming.Shapes
             return position + (rotation * CalculateVector());
         }
 
-        public static implicit operator Shape(SpreadShape spread) => spread.Shape;
+        public static implicit operator ShapeSO(SpreadShape spread) => spread.Shape;
     }
 }

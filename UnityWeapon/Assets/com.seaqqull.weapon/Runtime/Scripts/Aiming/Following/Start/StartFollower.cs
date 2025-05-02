@@ -1,25 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 namespace Weapons.Aiming.Following
 {
   public class StartFollower : IFollower
   {
-    private readonly Line _flow;
-
-    public Vector3 Direction { get; private set; }
+    public IReadOnlyList<Line> Flow { get; }
+    public Vector3 CurrentDirection { get; private set; }
     public bool CanBeRecalculated { get; private set; } = true;
 
 
     public StartFollower(IReadOnlyList<Line> flow) =>
-      _flow = flow[0];
+      Flow = flow;
 
 
-    public void Recalculate(float squaredDistance)
+    public void UpdateDirection(float squaredDistance)
     {
       if (!CanBeRecalculated) return;
 
-      Direction = _flow.Direction;
+      CurrentDirection = Flow[0].Direction;
       CanBeRecalculated = false;
     }
   }

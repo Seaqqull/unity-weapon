@@ -5,8 +5,8 @@ namespace Weapons.Ammo
 {
     public interface IAmmoController
     {
-        IBulletData BulletData { get; }
-        
+        IBulletSetup BulletSetup { get; }
+
         bool IsMagazineAmountUnlimited { get; }
         bool IsAmountUnlimited { get; }
         int MagazineCapacity { get; }

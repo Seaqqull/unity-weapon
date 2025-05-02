@@ -1,5 +1,6 @@
 using UnityEngine;
-using Weapons.Aiming;
+using Weapons.Aiming.Following;
+
 
 namespace Weapons.Bullets
 {
@@ -8,7 +9,7 @@ namespace Weapons.Bullets
         void Launch();
         void Bake(IBulletData data);
         void BakeFlowDirection(Transform bulletFlow);
-        void BakeFlowDirection(Line[] flow);
+        void BakeFlowDirection(IFollower follower);
         void BakeFlowDirection(Transform bulletFlow, Quaternion rotation);
     }
 }
